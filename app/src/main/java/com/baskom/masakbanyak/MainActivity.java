@@ -64,8 +64,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        MenuItem myActionMenuItem = menu.findItem( R.id.action_search);
-        myActionMenuItem.setIcon(R.drawable.ic_search_white_24dp);
+        MenuItem searchBar = menu.findItem( R.id.action_search);
+        MenuItem notificationItem = menu.findItem(R.id.action_notification);
+        searchBar.setIcon(R.drawable.ic_search_white_24dp);
         return super.onCreateOptionsMenu(menu);
 
     }

@@ -33,7 +33,8 @@
             <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/icmasakbanyak_text"
                 android:layout_width="150dp"
-                android:layout_height="20dp"
+                android:layout_marginLeft="5dp"
+                android:layout_height="30dp"
                 android:layout_alignBottom="@id/ic_masakbanyak"
                 android:layout_toRightOf="@id/ic_masakbanyak"
                 app:srcCompat="@drawable/ic_masakbanyak_text_only_white" />
