@@ -27,14 +27,6 @@
                 android:paddingBottom="4dp"
                 app:srcCompat="@drawable/ic_logo_icon" />
 
-            <!--<android.support.v7.widget.AppCompatImageView-->
-                <!--android:id="@+id/icmasakbanyak_text"-->
-                <!--android:layout_width="128dp"-->
-                <!--android:layout_height="40dp"-->
-                <!--android:paddingTop="7dp"-->
-                <!--android:layout_alignBottom="@id/ic_masakbanyak"-->
-                <!--android:layout_toRightOf="@id/ic_masakbanyak"-->
-                <!--app:srcCompat="@drawable/ic_masakbanyak_text_only_white" />-->
         </RelativeLayout>
     </android.support.v7.widget.Toolbar>
 
@@ -43,7 +35,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/navigation"
-        android:layout_below="@id/toolbar"></FrameLayout>
+        android:layout_below="@id/toolbar">
+    </FrameLayout>
+
+    <!--<com.github.ybq.android.spinkit.SpinKitView-->
+        <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+        <!--android:id="@+id/spin_kit"-->
+        <!--style="@style/SpinKitView.Large.Circle"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center"-->
+        <!--app:SpinKit_Color="@color/colorAccent"-->
+        <!--android:layout_centerInParent="true" />-->
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_centerInParent="true" />
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"

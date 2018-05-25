@@ -1,23 +1,53 @@
 package com.baskom.masakbanyak;
 
+import android.content.Context;
+import android.widget.Toast;
+
+import com.google.gson.annotations.SerializedName;
+
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by Castor on 4/5/2018.
  */
 
 public class Catering implements Serializable{
+    @SerializedName("_id")
+    private String catering_id;
+    @SerializedName("name")
     private String name;
+    @SerializedName("address")
     private String address;
-    private int rate;
-    private ArrayList<Packet> packetList = new ArrayList<>();
+    @SerializedName("phone")
+    private String phone;
+    @SerializedName("email")
+    private String email;
+    @SerializedName("ratings")
+    private ArrayList<Rating> ratings;
 
-    public Catering(String name, String address, int rate, ArrayList<Packet> packetList) {
+    public Catering(String catering_id, String name, String address, String phone, String email, ArrayList<Rating> ratings) {
+        this.catering_id = catering_id;
         this.name = name;
         this.address = address;
-        this.rate = rate;
-        this.packetList = packetList;
+        this.phone = phone;
+        this.email = email;
+        this.ratings = ratings;
+    }
+
+    public String getCatering_id() {
+        return catering_id;
+    }
+
+    public void setCatering_id(String catering_id) {
+        this.catering_id = catering_id;
     }
 
     public String getName() {
@@ -36,19 +66,27 @@ public class Catering implements Serializable{
         this.address = address;
     }
 
-    public int getRate() {
-        return rate;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setRate(int rate) {
-        this.rate = rate;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
-    public ArrayList<Packet> getPacketList() {
-        return packetList;
+    public String getEmail() {
+        return email;
     }
 
-    public void setPacketList(ArrayList<Packet> packetList) {
-        this.packetList = packetList;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public ArrayList<Rating> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(ArrayList<Rating> ratings) {
+        this.ratings = ratings;
     }
 }

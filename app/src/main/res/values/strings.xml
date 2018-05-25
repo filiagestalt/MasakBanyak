@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">MasakBanyak</string>
+    <string name="app_id">com.baskom.masakbanyak</string>
+    <string name="app_preference_key">com.baskom.masakbanyak.preferences</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_home">Home</string>
     <string name="title_search">Search</string>

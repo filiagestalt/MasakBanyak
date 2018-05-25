@@ -1,7 +1,7 @@
 package com.baskom.masakbanyak;
 
-import android.app.Dialog;
-import android.support.v4.app.DialogFragment;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -9,20 +9,30 @@ import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v7.widget.SearchView;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.auth0.android.jwt.JWT;
+import com.github.ybq.android.spinkit.SpinKitView;
+import com.github.ybq.android.spinkit.style.RotatingCircle;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
+import com.google.gson.JsonObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity
         implements HomeFragment.HomeFragmentInteractionListener,
@@ -35,6 +45,8 @@ public class MainActivity extends AppCompatActivity
     private Toolbar mToolbar;
     private BottomNavigationView mBottomNavigation;
     private SearchView mSearchView;
+    private ArrayList<Catering> mCaterings = new ArrayList<>();
+    private ProgressBar mProgressBar;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -48,7 +60,7 @@ public class MainActivity extends AppCompatActivity
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     if (!(fragment instanceof HomeFragment)) {
-                        transaction.replace(R.id.content, HomeFragment.newInstance(getCateringList()));
+                        transaction.replace(R.id.content, HomeFragment.newInstance(mCaterings));
                         transaction.addToBackStack(null);
                         transaction.commit();
                     }
@@ -88,17 +100,18 @@ public class MainActivity extends AppCompatActivity
         mBottomNavigation = findViewById(R.id.navigation);
         mBottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        //instance yang gw panggil buat hack BottomNavigationView-nya
         BottomNavigationHelper.removeShiftMode(mBottomNavigation);
 
         mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(R.id.content, HomeFragment.newInstance(getCateringList()));
-        transaction.commit();
+        mProgressBar = findViewById(R.id.progress_bar);
+        RotatingCircle rotatingCircle = new RotatingCircle();
+        rotatingCircle.setColor(R.color.colorAccentDark);
+        mProgressBar.setIndeterminateDrawable(rotatingCircle);
+
+        getCaterings(this);
     }
 
     @Override
@@ -134,7 +147,7 @@ public class MainActivity extends AppCompatActivity
                 FragmentManager manager = getSupportFragmentManager();
                 FragmentTransaction transaction = manager.beginTransaction();
                 ArrayList<Catering> filteredCateringList = new ArrayList<>(Collections2
-                        .filter(getCateringList(), new CateringFilter(query)));
+                        .filter(mCaterings, new CateringFilter(query)));
                 transaction.replace(R.id.content, HomeFragment.newInstance(filteredCateringList));
                 transaction.addToBackStack(null);
                 transaction.commit();
@@ -198,23 +211,140 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public ArrayList<Catering> getCateringList() {
-        Random random = new Random();
-        ArrayList<Catering> cateringList = new ArrayList<>();
+    public void getCaterings(final Context context){
+        SharedPreferences sharedPref = getSharedPreferences(getString(R.string
+                .app_preference_key), Context.MODE_PRIVATE);
+        final String accessTokenOld = sharedPref.getString("access_token", null);
+        final String refreshToken = sharedPref.getString("refresh_token", null);
+        final SharedPreferences.Editor editor = sharedPref.edit();
 
-        for (int i = 0; i < 9; i++) {
-            ArrayList<Packet> packetList = new ArrayList<>();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://192.168.0.33:3000/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        final MasakBanyakService service = retrofit.create(MasakBanyakService.class);
 
-            for(int x = 0; x < 7; x++){
-                packetList.add(new Packet("Packet0"+(x+1), x*10000));
-            }
+        //Access token check, if expired then refresh
+        final JWT jwt = new JWT(accessTokenOld);
+        if(jwt.isExpired(9)){
+            service.refresh(
+                    refreshToken,
+                    jwt.getClaim("customer_id").asString()
+            ).enqueue(
+                    new Callback<JsonObject>() {
+                        @Override
+                        public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                            if(response.code() == 200){
+                                String accessToken = response.body().get("access_token").getAsString();
+                                editor.putString("access_token", accessToken).apply();
 
-            cateringList.add(new Catering("Catering0" + (i + 1),
-                    "AddressofCatering0" + (i + 1),
-                    random.nextInt(5), packetList));
+                                service.caterings("Bearer "+accessToken).enqueue(
+                                        new Callback<ArrayList<Catering>>() {
+                                            @Override
+                                            public void onResponse(Call<ArrayList<Catering>> call,
+                                                                   Response<ArrayList<Catering>> response) {
+                                                if(response.code() == 200){
+                                                    mCaterings = response.body();
+                                                    FragmentManager manager = getSupportFragmentManager();
+                                                    FragmentTransaction transaction = manager.beginTransaction();
+                                                    transaction.replace(R.id.content, HomeFragment.newInstance(response.body()));
+                                                    transaction.commit();
+                                                    mProgressBar.setVisibility(View.GONE);
+                                                }else{
+                                                    try {
+                                                        Toast.makeText(
+                                                                context,
+                                                                response.errorBody().string(),
+                                                                Toast.LENGTH_LONG
+                                                        ).show();
+                                                    } catch (IOException e) {
+                                                        Toast.makeText(
+                                                                context,
+                                                                e.toString(),
+                                                                Toast.LENGTH_LONG
+                                                        ).show();
+                                                    }
+                                                    mProgressBar.setVisibility(View.GONE);
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onFailure(Call<ArrayList<Catering>> call, Throwable t) {
+                                                Toast.makeText(context, t.toString(), Toast.LENGTH_LONG).show();
+                                                mProgressBar.setVisibility(View.GONE);
+                                            }
+                                        });
+                            }else{
+                                try {
+                                    Toast.makeText(
+                                            context,
+                                            response.errorBody().string(),
+                                            Toast.LENGTH_LONG
+                                    ).show();
+                                } catch (IOException e) {
+                                    Toast.makeText(
+                                            context,
+                                            e.toString(),
+                                            Toast.LENGTH_LONG
+                                    ).show();
+                                }
+                                mProgressBar.setVisibility(View.GONE);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<JsonObject> call, Throwable t) {
+                            Toast.makeText(
+                                    context,
+                                    t.toString(),
+                                    Toast.LENGTH_LONG
+                            ).show();
+                            mProgressBar.setVisibility(View.GONE);
+                        }
+                    }
+            );
+        }else{
+            service.caterings("Bearer "+accessTokenOld).enqueue(
+                    new Callback<ArrayList<Catering>>() {
+                        @Override
+                        public void onResponse(
+                                Call<ArrayList<Catering>> call,
+                                Response<ArrayList<Catering>> response) {
+                            if(response.code() == 200){
+                                mCaterings = response.body();
+                                FragmentManager manager = getSupportFragmentManager();
+                                FragmentTransaction transaction = manager.beginTransaction();
+                                transaction.replace(
+                                        R.id.content,
+                                        HomeFragment.newInstance(response.body())
+                                );
+                                transaction.commit();
+                                mProgressBar.setVisibility(View.GONE);
+                            }else{
+                                try {
+                                    Toast.makeText(
+                                            context,
+                                            response.errorBody().string(),
+                                            Toast.LENGTH_LONG
+                                    ).show();
+                                } catch (IOException e) {
+                                    Toast.makeText(
+                                            context,
+                                            e.toString(),
+                                            Toast.LENGTH_LONG
+                                    ).show();
+                                }
+                                mProgressBar.setVisibility(View.GONE);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ArrayList<Catering>> call, Throwable t) {
+                            Toast.makeText(context, t.toString(), Toast.LENGTH_LONG).show();
+                            mProgressBar.setVisibility(View.GONE);
+                        }
+            });
         }
 
-        return cateringList;
     }
-
 }

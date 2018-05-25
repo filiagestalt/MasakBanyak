@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -60,7 +62,12 @@ public class CateringFragment extends Fragment {
         mTextViewCateringName = view.findViewById(R.id.catering_name);
         mTextViewCateringName.setText(mCatering.getName());
         mRecyclerView = view.findViewById(R.id.packet_list);
-        mPacketListAdapter = new PacketListAdapter(mCatering.getPacketList(), mListener);
+
+        //Nanti ganti packet asli ambil dari retrofit, ini buat test doang.
+        ArrayList<Packet> packetList = new ArrayList<>();
+        packetList.add(new Packet("Packet Dummy", 44000));
+        mPacketListAdapter = new PacketListAdapter(packetList, mListener);
+
         mRecyclerView.setLayoutManager(new GridLayoutManager(view.getContext(), 3));
         mRecyclerView.setAdapter(mPacketListAdapter);
 
