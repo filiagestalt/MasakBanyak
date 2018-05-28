@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 
 import com.auth0.android.jwt.JWT;
 import com.github.ybq.android.spinkit.SpinKitView;
+import com.github.ybq.android.spinkit.style.FoldingCube;
 import com.github.ybq.android.spinkit.style.RotatingCircle;
 import com.google.common.collect.Collections2;
 import com.google.gson.JsonObject;
@@ -38,7 +40,6 @@ public class MainActivity extends AppCompatActivity
         implements HomeFragment.HomeFragmentInteractionListener,
         TransactionFragment.TransactionFragmentInteractionListener,
         CateringFragment.CateringFragmentInteractionListener,
-        NotificationFragment.NotificationFragmentInteractionListener,
         ProfileFragment.ProfileFragmentInteractionListener,
         PacketFragment.PacketFragmentInteractionListener {
 
@@ -72,14 +73,6 @@ public class MainActivity extends AppCompatActivity
                         transaction.commit();
                     }
                     return true;
-
-                case R.id.navigation_notification:
-                    if (!(fragment instanceof NotificationFragment)) {
-                        transaction.replace(R.id.content, NotificationFragment.newInstance("01", "02"));
-                        transaction.addToBackStack(null);
-                        transaction.commit();
-                    }
-                    return true;
                 case R.id.navigation_profile:
                     if (!(fragment instanceof ProfileFragment)) {
                         transaction.replace(R.id.content, ProfileFragment.newInstance("01", "02"));
@@ -107,9 +100,9 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         mProgressBar = findViewById(R.id.progress_bar);
-        RotatingCircle rotatingCircle = new RotatingCircle();
-        rotatingCircle.setColor(R.color.colorAccentDark);
-        mProgressBar.setIndeterminateDrawable(rotatingCircle);
+        FoldingCube foldingCube = new FoldingCube();
+        foldingCube.setColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        mProgressBar.setIndeterminateDrawable(foldingCube);
 
         getCaterings(this);
     }
@@ -127,8 +120,6 @@ public class MainActivity extends AppCompatActivity
                 mBottomNavigation.setSelectedItemId(R.id.navigation_home);
             } else if (fragment instanceof TransactionFragment) {
                 mBottomNavigation.setSelectedItemId(R.id.navigation_transaction);
-            } else if (fragment instanceof NotificationFragment) {
-                mBottomNavigation.setSelectedItemId(R.id.navigation_notification);
             } else if (fragment instanceof ProfileFragment) {
                 mBottomNavigation.setSelectedItemId(R.id.navigation_profile);
             }
@@ -202,18 +193,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onNotificationFragmentInteraction(Uri uri) {
-
-    }
-
-    @Override
     public void onProfileFragmentInteraction(Uri uri) {
 
     }
 
     public void getCaterings(final Context context){
-        SharedPreferences sharedPref = getSharedPreferences(getString(R.string
-                .app_preference_key), Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences(
+                getString(R.string.app_preference_key),
+                Context.MODE_PRIVATE
+        );
         final String accessTokenOld = sharedPref.getString("access_token", null);
         final String refreshToken = sharedPref.getString("refresh_token", null);
         final SharedPreferences.Editor editor = sharedPref.edit();

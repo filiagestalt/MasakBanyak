@@ -2,7 +2,9 @@ package com.baskom.masakbanyak;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Rating {
+import java.io.Serializable;
+
+public class Rating implements Serializable {
     @SerializedName("rating_value")
     private int rating_value;
     @SerializedName("customer_id")

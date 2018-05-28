@@ -31,8 +31,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation 'com.android.support:design:27.1.0'
-    //searchview
-    implementation 'com.github.rudsonlive:searchliveo:1.1.2'
     //animasi
     implementation 'com.bartoszlipinski.constraint:staggeredanimationgroup:1.0.0'
     // obviously, you will also need those two:
@@ -49,4 +47,8 @@ dependencies {
     implementation 'com.auth0.android:jwtdecode:1.1.1'
     //android-spinkit
     implementation 'com.github.ybq:Android-SpinKit:1.1.0'
+    //picasso
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    //circular image view
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
 }

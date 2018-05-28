@@ -15,8 +15,8 @@
     <string name="hello_notification_fragment">Hello notification fragment</string>
     <string name="hello_profile_fragment">Hello profile fragment</string>
 
-    <!-- Some other placeholders -->
-    <string name="image_placeholder">Catering Image</string>
+    <!-- Catering placeholders -->
+    <string name="catering_image_placeholder">Catering Image</string>
     <string name="catering_name_placeholder">Catering Name</string>
     <string name="catering_email_placeholder">Catering Email</string>
     <string name="catering_address_placeholder">Catering Address</string>
@@ -24,4 +24,10 @@
     <string name="packet_name_placeholder">Packet name</string>
     <string name="packet_price_placeholder">Packet price</string>
     <string name="order_button_placeholder">Pesan</string>
+
+    <!--Profile placeholders-->
+    <string name="profile_image_placeholder">Profile Image</string>
+    <string name="profile_name_placeholder">Profile Name</string>
+    <string name="profile_email_placeholder">Profile Email</string>
+    <string name="profile_phone_placeholder">Profile Phone Number</string>
 </resources>

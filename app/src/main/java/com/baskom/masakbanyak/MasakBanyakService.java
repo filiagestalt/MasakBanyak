@@ -33,8 +33,11 @@ public interface MasakBanyakService {
     @FormUrlEncoded
     @POST("auth/customer/logout")
     Call<ResponseBody> logout(@Field("refresh_token") String refreshToken, @Field("customer_id")
-            String customerId);
+            String customer_id);
 
     @GET("caterings")
     Call<ArrayList<Catering>> caterings(@Header("Authorization") String authorization);
+
+    @GET("customers/profile")
+    Call<Customer> profile(@Header("Authorization") String authorization);
 }
