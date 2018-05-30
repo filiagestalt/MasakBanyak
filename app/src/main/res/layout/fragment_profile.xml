@@ -38,6 +38,9 @@
         android:fontFamily="@font/rubik_lightitalic"
         android:textColor="@android:color/tab_indicator_text"
         android:background="@color/transparent"
+        android:maxLines="1"
+        android:imeOptions="actionDone"
+        android:inputType="text"
         />
 
     <EditText
@@ -54,6 +57,9 @@
         android:fontFamily="@font/rubik_bold"
         android:textColor="@android:color/tab_indicator_text"
         android:background="@color/transparent"
+        android:maxLines="1"
+        android:imeOptions="actionDone"
+        android:inputType="number"
         />
 
     <EditText
@@ -70,6 +76,9 @@
         android:fontFamily="@font/rubik_mediumitalic"
         android:textColor="@android:color/tab_indicator_text"
         android:background="@color/transparent"
+        android:maxLines="1"
+        android:imeOptions="actionDone"
+        android:inputType="textEmailAddress"
         />
 
     <android.support.constraint.ConstraintLayout

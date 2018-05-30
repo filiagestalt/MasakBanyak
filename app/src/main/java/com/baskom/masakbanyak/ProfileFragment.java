@@ -10,30 +10,36 @@ import android.provider.MediaStore;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.auth0.android.jwt.JWT;
 import com.github.ybq.android.spinkit.style.FoldingCube;
-import com.google.gson.JsonObject;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.io.IOException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.app.Activity.RESULT_OK;
+import static com.baskom.masakbanyak.Constants.verifyToken;
 
 public class ProfileFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
@@ -41,16 +47,26 @@ public class ProfileFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    private static final int PICK_IMAGE_REQUEST = 1;
+    private static final int PICK_IMAGE_REQUEST_CODE = 1;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private Customer mCustomer;
+    private File mAvatar;
 
     private ProfileFragmentInteractionListener mListener;
 
-    private CanMakeCall mCanMakeProfileCall = new CanMakeCall() {
+    private CircleImageView mImageView;
+    private EditText mEditTextName;
+    private EditText mEditTextPhone;
+    private EditText mEditTextEmail;
+    private ConstraintLayout mConstraintLayout;
+    private Button mButtonUpdateProfile;
+    private Button mButtonLogout;
+    private ProgressBar mProgressBar;
+
+    private CanMakeServiceCall mMakeProfileCall = new CanMakeServiceCall() {
         @Override
         public void makeCall(final Context context, MasakBanyakService service, String access_token) {
             Call<Customer> call = service.profile("Bearer "+access_token);
@@ -101,14 +117,77 @@ public class ProfileFragment extends Fragment {
         }
     };
 
-    private CircleImageView mImageView;
-    private EditText mEditTextName;
-    private EditText mEditTextPhone;
-    private EditText mEditTextEmail;
-    private ConstraintLayout mConstraintLayout;
-    private Button mButtonUpdateProfile;
-    private Button mButtonLogout;
-    private ProgressBar mProgressBar;
+    private CanMakeServiceCall mMakeProfileUpdateCall = new CanMakeServiceCall() {
+        @Override
+        public void makeCall(final Context context, MasakBanyakService service, String access_token) {
+            Call<ResponseBody> call = service.updateProfile(
+                    "Bearer "+access_token,
+                    mEditTextName.getText().toString(),
+                    mEditTextPhone.getText().toString(),
+                    mEditTextEmail.getText().toString()
+            );
+
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if(response.isSuccessful()){
+                        try {
+                            Toast.makeText(context, response.body().string(), Toast.LENGTH_LONG).show();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }else{
+                        try {
+                            Toast.makeText(context, response.errorBody().string(), Toast.LENGTH_LONG).show();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Toast.makeText(context, t.toString(), Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+    };
+
+    private CanMakeServiceCall mMakeAvatarUploadCall = new CanMakeServiceCall() {
+        @Override
+        public void makeCall(final Context context, MasakBanyakService service, String access_token) {
+            RequestBody fileRequestBody = RequestBody.create(MediaType.parse("image/*"), mAvatar);
+
+            Call<ResponseBody> call = service.uploadAvatar(
+                    "Bearer "+access_token,
+                    fileRequestBody
+            );
+
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if(response.isSuccessful()){
+                        try {
+                            Toast.makeText(context, response.body().string(), Toast.LENGTH_LONG).show();
+                        } catch (IOException e) {
+                            Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
+                        }
+                    }else{
+                        try {
+                            Toast.makeText(context, response.errorBody().string(), Toast.LENGTH_LONG).show();
+                        } catch (IOException e) {
+                            Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Toast.makeText(context, t.toString(), Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+    };
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -149,8 +228,7 @@ public class ProfileFragment extends Fragment {
         mButtonUpdateProfile = view.findViewById(R.id.button_update);
         mButtonLogout = view.findViewById(R.id.button_logout);
 
-        mImageView.setOnClickListener(
-                new View.OnClickListener() {
+        mImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent();
@@ -158,14 +236,35 @@ public class ProfileFragment extends Fragment {
                         intent.setAction(Intent.ACTION_GET_CONTENT);
                         startActivityForResult(
                                 Intent.createChooser(intent, "Select Picture"),
-                                PICK_IMAGE_REQUEST
+                                PICK_IMAGE_REQUEST_CODE
                         );
                     }
                 }
         );
 
-        mButtonLogout.setOnClickListener(
-                new View.OnClickListener() {
+        //Hide the keyboard when enter is pressed, but why it affects other editText object ass well?
+        mEditTextName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId == EditorInfo.IME_ACTION_DONE){
+                    InputMethodManager inputMethodManager = (InputMethodManager) getActivity()
+                            .getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputMethodManager.hideSoftInputFromWindow(mEditTextName.getWindowToken(),
+                            0);
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        mButtonUpdateProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                verifyToken(v.getContext(), mMakeProfileUpdateCall);
+            }
+        });
+
+        mButtonLogout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         logout(v.getContext());
@@ -178,7 +277,7 @@ public class ProfileFragment extends Fragment {
         foldingCube.setColor(ContextCompat.getColor(view.getContext(), R.color.colorPrimaryDark));
         mProgressBar.setIndeterminateDrawable(foldingCube);
 
-        verifyAndExecuteCall(view.getContext(), mCanMakeProfileCall);
+        verifyToken(view.getContext(), mMakeProfileCall);
 
         return view;
     }
@@ -204,10 +303,11 @@ public class ProfileFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK &&
+        if (requestCode == PICK_IMAGE_REQUEST_CODE && resultCode == RESULT_OK &&
                 data != null && data.getData() != null) {
 
             Uri uri = data.getData();
+            mAvatar = new File(uri.getPath());
 
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(
@@ -219,76 +319,14 @@ public class ProfileFragment extends Fragment {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            verifyToken(getContext(), mMakeAvatarUploadCall);
         }
     }
 
     public interface ProfileFragmentInteractionListener {
         // TODO: Update argument type and name
         void onProfileFragmentInteraction(Uri uri);
-    }
-
-    public void verifyAndExecuteCall(final Context context, final CanMakeCall canMakeCall){
-        final SharedPreferences sharedPref = context.getSharedPreferences(
-                getString(R.string.app_preference_key),
-                Context.MODE_PRIVATE
-        );
-        final SharedPreferences.Editor editor = sharedPref.edit();
-
-        String access_token_old = sharedPref.getString("access_token", null);
-        String refresh_token = sharedPref.getString("refresh_token", null);
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.0.33:3000/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        final MasakBanyakService service = retrofit.create(MasakBanyakService.class);
-
-        JWT jwt = new JWT(access_token_old);
-
-        if(jwt.isExpired(9)){
-            Call<JsonObject> call = service.refresh(
-                    refresh_token,
-                    jwt.getClaim("customer_id").asString()
-            );
-
-            call.enqueue(new Callback<JsonObject>() {
-                @Override
-                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                    if(response.isSuccessful()){
-                        String access_token = response.body().get("access_token").getAsString();
-                        editor.putString("access_token", access_token).apply();
-
-                        canMakeCall.makeCall(context, service, access_token);
-                    }else{
-                        try {
-                            Toast.makeText(
-                                    context,
-                                    response.errorBody().string(),
-                                    Toast.LENGTH_SHORT
-                            ).show();
-                        } catch (IOException e) {
-                            Toast.makeText(
-                                    context,
-                                    e.toString(),
-                                    Toast.LENGTH_SHORT
-                            ).show();
-                        }
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<JsonObject> call, Throwable t) {
-                    Toast.makeText(
-                            context,
-                            t.toString(),
-                            Toast.LENGTH_LONG
-                    ).show();
-                }
-            });
-        }else{
-            canMakeCall.makeCall(context, service, access_token_old);
-        }
     }
 
     public void logout(final Context context){
@@ -303,7 +341,7 @@ public class ProfileFragment extends Fragment {
         String customer_id = new JWT(accessToken).getClaim("customer_id").asString();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.0.33:3000/")
+                .baseUrl(Constants.URL)
                 .build();
 
         MasakBanyakService service = retrofit.create(MasakBanyakService.class);
