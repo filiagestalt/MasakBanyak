@@ -1,9 +1,11 @@
 package com.baskom.masakbanyak;
 
+import android.content.res.Configuration;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -101,12 +103,12 @@ public class CateringActivity extends AppCompatActivity {
 
         mPacketsAdapter = new PacketsAdapter(mPackets);
 
-        mPacketsRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        mPacketsRecyclerView.setLayoutManager(new LinearLayoutManager(this, Configuration.ORIENTATION_PORTRAIT, false));
         mPacketsRecyclerView.setAdapter(mPacketsAdapter);
 
         FoldingCube foldingCube = new FoldingCube();
         foldingCube.setColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
 
-        verifyTokenAndExecuteCall(getApplicationContext(), mMakePacketsCall);
+        verifyTokenAndExecuteCall(this, mMakePacketsCall);
     }
 }

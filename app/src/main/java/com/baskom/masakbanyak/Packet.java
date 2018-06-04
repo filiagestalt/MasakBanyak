@@ -14,8 +14,8 @@ public class Packet implements Serializable {
     private String packet_id;
     @SerializedName("name")
     private String name;
-    @SerializedName("content")
-    private ArrayList<String> content;
+    @SerializedName("contents")
+    private ArrayList<String> contents;
     @SerializedName("minimum_quantity")
     private int minimum_quantity;
     @SerializedName("price")
@@ -25,10 +25,10 @@ public class Packet implements Serializable {
     @SerializedName("catering_id")
     private String catering_id;
 
-    public Packet(String packet_id, String name, ArrayList<String> content, int minimum_quantity, int price, ArrayList<String> images, String catering_id) {
+    public Packet(String packet_id, String name, ArrayList<String> contents, int minimum_quantity, int price, ArrayList<String> images, String catering_id) {
         this.packet_id = packet_id;
         this.name = name;
-        this.content = content;
+        this.contents = contents;
         this.minimum_quantity = minimum_quantity;
         this.price = price;
         this.images = images;
@@ -51,12 +51,12 @@ public class Packet implements Serializable {
         this.name = name;
     }
 
-    public ArrayList<String> getContent() {
-        return content;
+    public ArrayList<String> getContents() {
+        return contents;
     }
 
-    public void setContent(ArrayList<String> content) {
-        this.content = content;
+    public void setContents(ArrayList<String> contents) {
+        this.contents = contents;
     }
 
     public int getMinimum_quantity() {

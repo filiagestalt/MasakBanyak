@@ -20,6 +20,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+import static com.baskom.masakbanyak.Constants.MASAKBANYAK_URL;
+
 public class RegisterActivity extends AppCompatActivity {
 
     private AutoCompleteTextView mName;
@@ -50,7 +52,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
         },500);
 
-        Retrofit retrofit = new Retrofit.Builder().baseUrl("http://192.168.0.33:3000/").build();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(MASAKBANYAK_URL).build();
         final MasakBanyakService service = retrofit.create(MasakBanyakService.class);
 
         mButton.setOnClickListener(new View.OnClickListener() {

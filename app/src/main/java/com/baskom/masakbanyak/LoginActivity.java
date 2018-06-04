@@ -21,6 +21,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.baskom.masakbanyak.Constants.MASAKBANYAK_URL;
+
 public class LoginActivity extends AppCompatActivity {
     private StaggeredAnimationGroup gLoginForm;
     private StaggeredAnimationGroup gLoginDaftarBtn;
@@ -64,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.0.33:3000/")
+                .baseUrl(MASAKBANYAK_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         final MasakBanyakService service = retrofit.create(MasakBanyakService.class);

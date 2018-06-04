@@ -1,5 +1,8 @@
 package com.baskom.masakbanyak;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,13 +12,17 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
+
+import static com.baskom.masakbanyak.Constants.MASAKBANYAK_URL;
 
 public class PacketsAdapter extends RecyclerView.Adapter<PacketsAdapter.ViewHolder> {
 
     private ArrayList<Packet> packets = new ArrayList<>();
 
-    public PacketsAdapter(ArrayList<Packet> packets){
+    public PacketsAdapter(ArrayList<Packet> packets) {
         this.packets = packets;
     }
 
@@ -29,6 +36,20 @@ public class PacketsAdapter extends RecyclerView.Adapter<PacketsAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         holder.mTextView.setText(packets.get(position).getName());
+        holder.mLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), PacketActivity.class);
+                intent.putExtra("packet", packets.get(position));
+
+                view.getContext().startActivity(intent);
+            }
+        });
+
+        Picasso.get().load(MASAKBANYAK_URL+packets.get(position).getImages().get(0))
+                .fit()
+                .centerCrop()
+                .into(holder.mImageView);
     }
 
     @Override
