@@ -51,4 +51,7 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     //circular image view
     implementation 'de.hdodenhof:circleimageview:2.2.0'
+    //apache commons io
+    implementation group: 'commons-io', name: 'commons-io', version: '2.6'
+
 }

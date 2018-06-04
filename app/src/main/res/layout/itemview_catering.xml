@@ -6,8 +6,8 @@
     android:layout_margin="9dp"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/catering_name"
+    <RelativeLayout
+        android:id="@+id/catering_item_layout"
         android:layout_width="match_parent"
         android:layout_height="128dp"
         android:layout_marginBottom="8dp"
@@ -20,6 +20,24 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:fontFamily="@font/rubik_light"/>
+        >
+
+        <ImageView
+            android:id="@+id/catering_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/catering_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:padding="4dp"
+            android:gravity="center"
+            android:background="@color/custom02"
+            android:text="@string/catering_name_placeholder"
+            android:fontFamily="@font/rubik_light"
+            android:textSize="16dp" />
+    </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

@@ -32,14 +32,17 @@ public class Catering implements Serializable{
     private String email;
     @SerializedName("ratings")
     private ArrayList<Rating> ratings;
+    @SerializedName("avatar")
+    private String avatar;
 
-    public Catering(String catering_id, String name, String address, String phone, String email, ArrayList<Rating> ratings) {
+    public Catering(String catering_id, String name, String address, String phone, String email, ArrayList<Rating> ratings, String avatar) {
         this.catering_id = catering_id;
         this.name = name;
         this.address = address;
         this.phone = phone;
         this.email = email;
         this.ratings = ratings;
+        this.avatar = avatar;
     }
 
     public String getCatering_id() {
@@ -88,5 +91,13 @@ public class Catering implements Serializable{
 
     public void setRatings(ArrayList<Rating> ratings) {
         this.ratings = ratings;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

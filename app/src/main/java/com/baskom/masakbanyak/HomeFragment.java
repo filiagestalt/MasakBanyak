@@ -4,65 +4,116 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import com.github.ybq.android.spinkit.style.FoldingCube;
+
+import java.io.IOException;
 import java.util.ArrayList;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link HomeFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link HomeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import static com.baskom.masakbanyak.Constants.verifyTokenAndExecuteCall;
+
+
 public class HomeFragment extends Fragment {
 
-    private static final String ARG_PARAM = "Catering List";
+    private ArrayList<Catering> mCaterings = new ArrayList<>();
 
-    private ArrayList<Catering> mCateringList = new ArrayList<>();
+    private ProgressBar mProgressBar;
+    private CateringsAdapter mCateringsAdapter;
+    private RecyclerView mCateringsRecyclerView;
 
     private HomeFragmentInteractionListener mListener;
+    private CanMakeServiceCall mCateringsCall = new CanMakeServiceCall() {
+        @Override
+        public void makeCall(MasakBanyakService service, String access_token) {
+            Call<ArrayList<Catering>> call = service.caterings("Bearer "+access_token);
 
-    private RecyclerView mRecyclerView;
-    private CateringListAdapter mCateringListAdapter;
+            call.enqueue(new Callback<ArrayList<Catering>>() {
+                @Override
+                public void onResponse(Call<ArrayList<Catering>> call, Response<ArrayList<Catering>> response) {
+                    if(response.isSuccessful()){
+                        mCaterings = response.body();
+
+                        mCateringsAdapter.setCaterings(mCaterings);
+                        mCateringsAdapter.notifyDataSetChanged();
+
+                        mCateringsRecyclerView.setVisibility(View.VISIBLE);
+                        mProgressBar.setVisibility(View.GONE);
+                    }else{
+                        try {
+                            Toast.makeText(
+                                    getContext(),
+                                    response.errorBody().string(),
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        } catch (IOException e) {
+                            Toast.makeText(
+                                    getContext(),
+                                    e.toString(),
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+                        mProgressBar.setVisibility(View.GONE);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ArrayList<Catering>> call, Throwable t) {
+                    Toast.makeText(getContext(), t.toString(), Toast.LENGTH_LONG).show();
+                    mProgressBar.setVisibility(View.GONE);
+                }
+            });
+        }
+    };
 
     public HomeFragment() {
 
     }
 
-    public static HomeFragment newInstance(ArrayList<Catering> cateringList) {
+    public static HomeFragment newInstance() {
         HomeFragment fragment = new HomeFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(ARG_PARAM, cateringList);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mCateringList = (ArrayList<Catering>) getArguments().getSerializable(ARG_PARAM);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        mRecyclerView = view.findViewById(R.id.catering_list);
-        mCateringListAdapter = new CateringListAdapter(mCateringList, mListener);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext(),
-                Configuration.ORIENTATION_PORTRAIT, false));
-        mRecyclerView.setAdapter(mCateringListAdapter);
+        mCateringsRecyclerView = view.findViewById(R.id.caterings);
+        mProgressBar = view.findViewById(R.id.progress_bar);
+
+        mCateringsAdapter = new CateringsAdapter(mCaterings, mListener);
+        mCateringsRecyclerView.setLayoutManager(
+                new LinearLayoutManager(
+                        view.getContext(),
+                        Configuration.ORIENTATION_PORTRAIT,
+                        false
+                )
+        );
+        mCateringsRecyclerView.setAdapter(mCateringsAdapter);
+        mCateringsRecyclerView.setVisibility(View.INVISIBLE);
+
+        FoldingCube foldingCube = new FoldingCube();
+        foldingCube.setColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryDark));
+        mProgressBar.setIndeterminateDrawable(foldingCube);
+
+        verifyTokenAndExecuteCall(getContext().getApplicationContext(), mCateringsCall);
 
         return view;
     }

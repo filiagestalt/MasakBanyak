@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context="com.baskom.masakbanyak.PreLoginRegisterActivity">
+    tools:context="com.baskom.masakbanyak.LoginActivity">
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/top_icon"

@@ -80,7 +80,7 @@ public class RegisterActivity extends AppCompatActivity {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         Intent intent = new Intent(RegisterActivity.this,
-                                                PreLoginRegisterActivity.class);
+                                                LoginActivity.class);
                                         startActivity(intent);
                                         dialog.dismiss();
                                     }

@@ -16,11 +16,14 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Constants {
-    public static final String URL = "http://192.168.0.33:3000";
+    public static final String MASAKBANYAK_URL = "http://192.168.0.33:3000";
 
-    public static void verifyToken(final Context context, final CanMakeServiceCall canMakeServiceCall){
+    public static void verifyTokenAndExecuteCall(
+            final Context context,
+            final CanMakeServiceCall canMakeServiceCall
+    ){
         final SharedPreferences sharedPref = context.getSharedPreferences(
-                context.getString(R.string.app_preference_key),
+                context.getString(R.string.app_preferences_key),
                 Context.MODE_PRIVATE
         );
         final SharedPreferences.Editor editor = sharedPref.edit();
@@ -29,7 +32,7 @@ public class Constants {
         String refresh_token = sharedPref.getString("refresh_token", null);
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.URL)
+                .baseUrl(Constants.MASAKBANYAK_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -50,19 +53,19 @@ public class Constants {
                         String access_token = response.body().get("access_token").getAsString();
                         editor.putString("access_token", access_token).apply();
 
-                        canMakeServiceCall.makeCall(context, service, access_token);
+                        canMakeServiceCall.makeCall(service, access_token);
                     }else{
                         try {
                             Toast.makeText(
                                     context,
                                     response.errorBody().string(),
-                                    Toast.LENGTH_SHORT
+                                    Toast.LENGTH_LONG
                             ).show();
                         } catch (IOException e) {
                             Toast.makeText(
                                     context,
                                     e.toString(),
-                                    Toast.LENGTH_SHORT
+                                    Toast.LENGTH_LONG
                             ).show();
                         }
                     }
@@ -78,7 +81,7 @@ public class Constants {
                 }
             });
         }else{
-            canMakeServiceCall.makeCall(context, service, access_token_old);
+            canMakeServiceCall.makeCall(service, access_token_old);
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.baskom.masakbanyak;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,7 +21,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class PreLoginRegisterActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
     private StaggeredAnimationGroup gLoginForm;
     private StaggeredAnimationGroup gLoginDaftarBtn;
     private Button mBtnPreLogin;
@@ -37,7 +36,7 @@ public class PreLoginRegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         loginCheck();
 
-        setContentView(R.layout.activity_pre_login_register);
+        setContentView(R.layout.activity_login);
         mEmail = findViewById(R.id.et_email);
         mPassword = findViewById(R.id.et_password);
         gLoginForm = findViewById(R.id.groupLoginForm);
@@ -59,7 +58,7 @@ public class PreLoginRegisterActivity extends AppCompatActivity {
         mBtnPreDaftar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(PreLoginRegisterActivity.this, RegisterActivity.class);
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
                 startActivity(intent);
             }
         });
@@ -82,7 +81,7 @@ public class PreLoginRegisterActivity extends AppCompatActivity {
                             SharedPreferences sharedPref = v
                                     .getContext()
                                     .getSharedPreferences(
-                                            getString(R.string.app_preference_key),
+                                            getString(R.string.app_preferences_key),
                                             Context.MODE_PRIVATE
                                     );
                             SharedPreferences.Editor editor = sharedPref.edit();
@@ -101,18 +100,18 @@ public class PreLoginRegisterActivity extends AppCompatActivity {
                             editor.commit();
 
                             Intent intent = new Intent(
-                                    PreLoginRegisterActivity.this,
+                                    LoginActivity.this,
                                     MainActivity.class
                             );
                             startActivity(intent);
                             finish();
                         }else{
                             try {
-                                Toast.makeText(PreLoginRegisterActivity.this,
+                                Toast.makeText(LoginActivity.this,
                                         response.errorBody().string(),
                                         Toast.LENGTH_LONG).show();
                             } catch (IOException e) {
-                                Toast.makeText(PreLoginRegisterActivity.this,
+                                Toast.makeText(LoginActivity.this,
                                         e.toString(),
                                         Toast.LENGTH_LONG).show();
                             }
@@ -121,7 +120,7 @@ public class PreLoginRegisterActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<JsonObject> call, Throwable t) {
-                        Toast.makeText(PreLoginRegisterActivity.this,
+                        Toast.makeText(LoginActivity.this,
                                 t.toString(),
                                 Toast.LENGTH_LONG).show();
                     }
@@ -144,7 +143,7 @@ public class PreLoginRegisterActivity extends AppCompatActivity {
     public void loginCheck(){
         Intent intent;
         SharedPreferences sharedPref = getSharedPreferences(
-                getString(R.string.app_preference_key),
+                getString(R.string.app_preferences_key),
                 Context.MODE_PRIVATE
         );
 

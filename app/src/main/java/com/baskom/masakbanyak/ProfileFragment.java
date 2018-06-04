@@ -3,7 +3,7 @@ package com.baskom.masakbanyak;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -26,11 +26,14 @@ import com.auth0.android.jwt.JWT;
 import com.github.ybq.android.spinkit.style.FoldingCube;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
+import org.apache.commons.io.IOUtils;
+
 import java.io.IOException;
+import java.io.InputStream;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -39,7 +42,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 import static android.app.Activity.RESULT_OK;
-import static com.baskom.masakbanyak.Constants.verifyToken;
+import static com.baskom.masakbanyak.Constants.MASAKBANYAK_URL;
+import static com.baskom.masakbanyak.Constants.verifyTokenAndExecuteCall;
 
 public class ProfileFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
@@ -53,7 +57,8 @@ public class ProfileFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     private Customer mCustomer;
-    private File mAvatar;
+    private String filename = "";
+    private byte[] mAvatar;
 
     private ProfileFragmentInteractionListener mListener;
 
@@ -68,8 +73,11 @@ public class ProfileFragment extends Fragment {
 
     private CanMakeServiceCall mMakeProfileCall = new CanMakeServiceCall() {
         @Override
-        public void makeCall(final Context context, MasakBanyakService service, String access_token) {
-            Call<Customer> call = service.profile("Bearer "+access_token);
+        public void makeCall(MasakBanyakService service, String access_token) {
+            JWT jwt = new JWT(access_token);
+            String customer_id = jwt.getClaim("customer_id").asString();
+
+            Call<Customer> call = service.profile("Bearer "+access_token, customer_id);
 
             call.enqueue(new Callback<Customer>() {
                 @Override
@@ -77,25 +85,28 @@ public class ProfileFragment extends Fragment {
                     if(response.isSuccessful()){
                         mCustomer = response.body();
 
-                        Picasso.get().load(mCustomer.getAvatar()).into(mImageView);
+                        Picasso.get().load(MASAKBANYAK_URL +mCustomer.getAvatar()).into(mImageView);
 
                         mEditTextName.setText(mCustomer.getName());
+                        mEditTextName.setVisibility(View.VISIBLE);
                         mEditTextPhone.setText(mCustomer.getPhone());
+                        mEditTextPhone.setVisibility(View.VISIBLE);
                         mEditTextEmail.setText(mCustomer.getEmail());
+                        mEditTextEmail.setVisibility(View.VISIBLE);
 
                         mProgressBar.setVisibility(View.GONE);
                         mConstraintLayout.setVisibility(View.VISIBLE);
                     }else{
                         try {
                             Toast.makeText(
-                                    context,
+                                    getContext(),
                                     response.errorBody().string(),
                                     Toast.LENGTH_LONG
                             ).show();
                             mProgressBar.setVisibility(View.GONE);
                         } catch (IOException e) {
                             Toast.makeText(
-                                    context,
+                                    getContext(),
                                     e.toString(),
                                     Toast.LENGTH_LONG
                             ).show();
@@ -107,7 +118,7 @@ public class ProfileFragment extends Fragment {
                 @Override
                 public void onFailure(Call<Customer> call, Throwable t) {
                     Toast.makeText(
-                            context,
+                            getContext(),
                             t.toString(),
                             Toast.LENGTH_LONG
                     ).show();
@@ -119,9 +130,13 @@ public class ProfileFragment extends Fragment {
 
     private CanMakeServiceCall mMakeProfileUpdateCall = new CanMakeServiceCall() {
         @Override
-        public void makeCall(final Context context, MasakBanyakService service, String access_token) {
+        public void makeCall(MasakBanyakService service, String access_token) {
+            JWT jwt = new JWT(access_token);
+            String customer_id = jwt.getClaim("customer_id").asString();
+
             Call<ResponseBody> call = service.updateProfile(
                     "Bearer "+access_token,
+                    customer_id,
                     mEditTextName.getText().toString(),
                     mEditTextPhone.getText().toString(),
                     mEditTextEmail.getText().toString()
@@ -132,13 +147,13 @@ public class ProfileFragment extends Fragment {
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if(response.isSuccessful()){
                         try {
-                            Toast.makeText(context, response.body().string(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), response.body().string(), Toast.LENGTH_LONG).show();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }else{
                         try {
-                            Toast.makeText(context, response.errorBody().string(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -147,7 +162,7 @@ public class ProfileFragment extends Fragment {
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    Toast.makeText(context, t.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), t.toString(), Toast.LENGTH_LONG).show();
                 }
             });
         }
@@ -155,12 +170,18 @@ public class ProfileFragment extends Fragment {
 
     private CanMakeServiceCall mMakeAvatarUploadCall = new CanMakeServiceCall() {
         @Override
-        public void makeCall(final Context context, MasakBanyakService service, String access_token) {
-            RequestBody fileRequestBody = RequestBody.create(MediaType.parse("image/*"), mAvatar);
+        public void makeCall(MasakBanyakService service, String access_token) {
+            JWT jwt = new JWT(access_token);
+            String customer_id = jwt.getClaim("customer_id").asString();
+            RequestBody fileRequestBody = RequestBody.create(MediaType.parse("image/jpeg"), mAvatar);
+            MultipartBody.Part body = MultipartBody.Part.createFormData(
+                    "avatar", filename, fileRequestBody
+            );
 
             Call<ResponseBody> call = service.uploadAvatar(
                     "Bearer "+access_token,
-                    fileRequestBody
+                    customer_id,
+                    body
             );
 
             call.enqueue(new Callback<ResponseBody>() {
@@ -168,22 +189,23 @@ public class ProfileFragment extends Fragment {
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if(response.isSuccessful()){
                         try {
-                            Toast.makeText(context, response.body().string(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), response.body().string(), Toast.LENGTH_LONG).show();
                         } catch (IOException e) {
-                            Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), e.toString(), Toast.LENGTH_LONG).show();
+
                         }
                     }else{
                         try {
-                            Toast.makeText(context, response.errorBody().string(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
                         } catch (IOException e) {
-                            Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), e.toString(), Toast.LENGTH_LONG).show();
                         }
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    Toast.makeText(context, t.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), t.toString(), Toast.LENGTH_LONG).show();
                 }
             });
         }
@@ -219,8 +241,11 @@ public class ProfileFragment extends Fragment {
 
         mImageView = view.findViewById(R.id.image_view);
         mEditTextName = view.findViewById(R.id.edit_text_name);
+        mEditTextName.setVisibility(View.INVISIBLE);
         mEditTextPhone = view.findViewById(R.id.edit_text_phone);
+        mEditTextPhone.setVisibility(View.INVISIBLE);
         mEditTextEmail = view.findViewById(R.id.edit_text_email);
+        mEditTextEmail.setVisibility(View.INVISIBLE);
 
         mConstraintLayout = view.findViewById(R.id.constraint_layout_button_background);
         mConstraintLayout.setVisibility(View.INVISIBLE);
@@ -232,7 +257,7 @@ public class ProfileFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent();
-                        intent.setType("image/*");
+                        intent.setType("image/jpeg");
                         intent.setAction(Intent.ACTION_GET_CONTENT);
                         startActivityForResult(
                                 Intent.createChooser(intent, "Select Picture"),
@@ -260,7 +285,7 @@ public class ProfileFragment extends Fragment {
         mButtonUpdateProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                verifyToken(v.getContext(), mMakeProfileUpdateCall);
+                verifyTokenAndExecuteCall(v.getContext().getApplicationContext(), mMakeProfileUpdateCall);
             }
         });
 
@@ -277,7 +302,7 @@ public class ProfileFragment extends Fragment {
         foldingCube.setColor(ContextCompat.getColor(view.getContext(), R.color.colorPrimaryDark));
         mProgressBar.setIndeterminateDrawable(foldingCube);
 
-        verifyToken(view.getContext(), mMakeProfileCall);
+        verifyTokenAndExecuteCall(view.getContext().getApplicationContext(), mMakeProfileCall);
 
         return view;
     }
@@ -307,20 +332,33 @@ public class ProfileFragment extends Fragment {
                 data != null && data.getData() != null) {
 
             Uri uri = data.getData();
-            mAvatar = new File(uri.getPath());
 
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(
-                        getActivity().getContentResolver(),
-                        uri
-                );
+            String[] projection = {MediaStore.MediaColumns.DISPLAY_NAME};
+            Cursor cursor = getActivity().getContentResolver().query(
+                    uri,
+                    projection,
+                    null,
+                    null,
+                    null
+            );
 
-                mImageView.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
+            if(cursor != null && cursor.getCount() > 0){
+                int columnIndex = cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME);
+                cursor.moveToFirst();
+                filename = cursor.getString(columnIndex);
             }
 
-            verifyToken(getContext(), mMakeAvatarUploadCall);
+            cursor.close();
+
+            try {
+                InputStream inputStream = getActivity().getContentResolver().openInputStream(uri);
+                mAvatar = IOUtils.toByteArray(inputStream);
+                inputStream.close();
+            } catch (Exception e) {
+                Toast.makeText(getContext(), e.toString(), Toast.LENGTH_LONG).show();
+            }
+
+            verifyTokenAndExecuteCall(getContext().getApplicationContext(), mMakeAvatarUploadCall);
         }
     }
 
@@ -331,7 +369,7 @@ public class ProfileFragment extends Fragment {
 
     public void logout(final Context context){
         final SharedPreferences sharedPreferences = context.getSharedPreferences(
-                getString(R.string.app_preference_key),
+                getString(R.string.app_preferences_key),
                 Context.MODE_PRIVATE
         );
         final SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -341,7 +379,7 @@ public class ProfileFragment extends Fragment {
         String customer_id = new JWT(accessToken).getClaim("customer_id").asString();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.URL)
+                .baseUrl(MASAKBANYAK_URL)
                 .build();
 
         MasakBanyakService service = retrofit.create(MasakBanyakService.class);
@@ -372,7 +410,7 @@ public class ProfileFragment extends Fragment {
                                 ).show();
                             }
 
-                            Intent intent = new Intent(context, PreLoginRegisterActivity.class);
+                            Intent intent = new Intent(context, LoginActivity.class);
                             intent.setFlags(
                                     Intent.FLAG_ACTIVITY_NEW_TASK |
                                             Intent.FLAG_ACTIVITY_CLEAR_TASK);

@@ -1,6 +1,6 @@
 package com.baskom.masakbanyak;
 
-import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -8,83 +8,24 @@ import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v7.widget.SearchView;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
-import com.github.ybq.android.spinkit.style.FoldingCube;
-import com.google.common.collect.Collections2;
-
-import java.io.IOException;
 import java.util.ArrayList;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-import static com.baskom.masakbanyak.Constants.verifyToken;
 
 public class MainActivity extends AppCompatActivity
         implements HomeFragment.HomeFragmentInteractionListener,
         TransactionFragment.TransactionFragmentInteractionListener,
-        CateringFragment.CateringFragmentInteractionListener,
-        ProfileFragment.ProfileFragmentInteractionListener,
-        PacketFragment.PacketFragmentInteractionListener {
+        ProfileFragment.ProfileFragmentInteractionListener {
 
     private ArrayList<Catering> mCaterings = new ArrayList<>();
 
-    private CanMakeServiceCall mMakeCateringsServiceCall = new CanMakeServiceCall() {
-        @Override
-        public void makeCall(final Context context, MasakBanyakService service, String access_token) {
-            Call<ArrayList<Catering>> call = service.caterings("Bearer "+access_token);
-
-            call.enqueue(new Callback<ArrayList<Catering>>() {
-                        @Override
-                        public void onResponse(Call<ArrayList<Catering>> call, Response<ArrayList<Catering>> response) {
-                            if(response.code() == 200){
-                                mCaterings = response.body();
-                                FragmentManager manager = getSupportFragmentManager();
-                                FragmentTransaction transaction = manager.beginTransaction();
-                                transaction.replace(R.id.content, HomeFragment.newInstance(response.body()));
-                                transaction.commit();
-                                mProgressBar.setVisibility(View.GONE);
-                            }else{
-                                try {
-                                    Toast.makeText(
-                                            context,
-                                            response.errorBody().string(),
-                                            Toast.LENGTH_LONG
-                                    ).show();
-                                } catch (IOException e) {
-                                    Toast.makeText(
-                                            context,
-                                            e.toString(),
-                                            Toast.LENGTH_LONG
-                                    ).show();
-                                }
-                                mProgressBar.setVisibility(View.GONE);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<ArrayList<Catering>> call, Throwable t) {
-                            Toast.makeText(context, t.toString(), Toast.LENGTH_LONG).show();
-                            mProgressBar.setVisibility(View.GONE);
-                        }
-                    });
-        }
-    };
-
     private Toolbar mToolbar;
-    private BottomNavigationView mBottomNavigation;
     private SearchView mSearchView;
-    private ProgressBar mProgressBar;
+    private BottomNavigationView mBottomNavigation;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -98,7 +39,7 @@ public class MainActivity extends AppCompatActivity
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     if (!(fragment instanceof HomeFragment)) {
-                        transaction.replace(R.id.content, HomeFragment.newInstance(mCaterings));
+                        transaction.replace(R.id.content, HomeFragment.newInstance());
                         transaction.addToBackStack(null);
                         transaction.commit();
                     }
@@ -133,15 +74,14 @@ public class MainActivity extends AppCompatActivity
         BottomNavigationHelper.removeShiftMode(mBottomNavigation);
 
         mToolbar = findViewById(R.id.toolbar);
+
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        mProgressBar = findViewById(R.id.progress_bar);
-        FoldingCube foldingCube = new FoldingCube();
-        foldingCube.setColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
-        mProgressBar.setIndeterminateDrawable(foldingCube);
-
-        verifyToken(this, mMakeCateringsServiceCall);
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.content, HomeFragment.newInstance());
+        transaction.commit();
     }
 
     @Override
@@ -172,15 +112,16 @@ public class MainActivity extends AppCompatActivity
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                FragmentManager manager = getSupportFragmentManager();
-                FragmentTransaction transaction = manager.beginTransaction();
-                ArrayList<Catering> filteredCateringList = new ArrayList<>(Collections2
-                        .filter(mCaterings, new CateringFilter(query)));
-                transaction.replace(R.id.content, HomeFragment.newInstance(filteredCateringList));
-                transaction.addToBackStack(null);
-                transaction.commit();
+                // TODO: Make SearchFragment and call it from here
+//                FragmentManager manager = getSupportFragmentManager();
+//                FragmentTransaction transaction = manager.beginTransaction();
+//                ArrayList<Catering> filteredCateringList = new ArrayList<>(Collections2
+//                        .filter(mCaterings, new CateringFilter(query)));
+//                transaction.replace(R.id.content, HomeFragment.newInstance(filteredCateringList));
+//                transaction.addToBackStack(null);
+//                transaction.commit();
 
-                return true;
+                return false;
             }
 
             @Override
@@ -199,29 +140,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onHomeFragmentInteraction(Catering catering) {
-        FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(R.id.content, CateringFragment.newInstance(catering));
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }
-
-    @Override
-    public void onCateringFragmentInteraction(Packet packet) {
-        FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-        Fragment previousFragment = manager.findFragmentByTag("Packet");
-        if(previousFragment != null){
-            transaction.remove(previousFragment);
-        }
-        transaction.addToBackStack(null);
-        PacketFragment fragment = PacketFragment.newInstance(packet);
-        fragment.show(transaction, "Packet");
-    }
-
-    @Override
-    public void onPacketFragmentInteraction(Packet packet) {
-
+        Intent cateringIntent = new Intent(this, CateringActivity.class);
+        cateringIntent.putExtra("catering", catering);
+        startActivity(cateringIntent);
     }
 
     @Override
