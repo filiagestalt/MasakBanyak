@@ -3,17 +3,20 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
     android:layout_margin="9dp"
     android:orientation="vertical">
 
-    <RelativeLayout
+    <android.support.v7.widget.CardView
         android:id="@+id/packet_item_layout"
-        android:layout_width="256dp"
-        android:layout_height="64dp"
-        android:layout_marginBottom="0dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="0dp"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="104dp"
+        app:cardCornerRadius="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:background="@color/custom02"
         android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -32,13 +35,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:padding="4dp"
+            android:paddingStart="7dp"
+            android:paddingEnd="7dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
             android:gravity="center"
-            android:background="@color/custom02"
+            android:layout_gravity="bottom|end"
+            android:background="@drawable/packet_name_drawable"
             android:text="@string/packet_name_placeholder"
             android:fontFamily="@font/rubik_light"
-            android:textSize="16dp" />
+            android:textSize="17sp"
+            />
 
-    </RelativeLayout>
+    </android.support.v7.widget.CardView>
 
 </android.support.constraint.ConstraintLayout>

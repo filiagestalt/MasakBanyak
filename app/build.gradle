@@ -55,5 +55,12 @@ dependencies {
     implementation group: 'commons-io', name: 'commons-io', version: '2.6'
     //waveloadingview
     implementation 'me.itangqi.waveloadingview:library:0.3.5'
-
+    //stepper touch
+    implementation 'com.github.DanielMartinus:Stepper-Touch:0.6'
+    //cardview
+    implementation 'com.android.support:cardview-v7:26.1.0'
+    //shape of view
+    implementation 'com.github.florent37:shapeofview:1.1.2'
+    //datetimepicker
+    implementation 'com.wdullaer:materialdatetimepicker:3.6.0'
 }

@@ -1,26 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="9dp"
     android:orientation="vertical">
 
-    <RelativeLayout
+    <android.support.v7.widget.CardView
         android:id="@+id/catering_item_layout"
         android:layout_width="match_parent"
         android:layout_height="128dp"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:background="@color/custom02"
         android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:cardCornerRadius="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        >
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/catering_image"
@@ -32,12 +30,43 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:padding="4dp"
-            android:gravity="center"
+            android:layout_gravity="center"
             android:background="@color/custom02"
-            android:text="@string/catering_name_placeholder"
             android:fontFamily="@font/rubik_light"
+            android:gravity="center"
+            android:padding="4dp"
+            android:text="@string/catering_name_placeholder"
             android:textSize="16dp" />
-    </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+    <!--<android.support.v4.widget.Space-->
+        <!--android:id="@+id/margin_space"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_marginBottom="70dp"-->
+        <!--android:layout_marginEnd="16dp"-->
+        <!--app:layout_constraintBottom_toBottomOf="@+id/packet_images_shape"-->
+        <!--app:layout_constraintRight_toRightOf="parent" />-->
+
+    <me.itangqi.waveloadingview.WaveLoadingView
+        android:id="@+id/wave_rating"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/catering_item_layout"
+        app:wlv_borderColor="@color/colorPrimary"
+        app:wlv_borderWidth="3dp"
+        app:wlv_progressValue="40"
+        app:wlv_round_rectangle="true"
+        app:wlv_shapeType="circle"
+        app:wlv_titleCenter="Rating"
+        app:wlv_titleCenterColor="@color/colorPrimaryDark"
+        app:wlv_titleCenterSize="11sp"
+        app:wlv_titleCenterStrokeColor="@color/custom02"
+        app:wlv_titleCenterStrokeWidth="3dp"
+        app:wlv_triangle_direction="north"
+        app:wlv_waveAmplitude="70"
+        app:wlv_waveColor="@color/colorPrimary" />
 
 </android.support.constraint.ConstraintLayout>
