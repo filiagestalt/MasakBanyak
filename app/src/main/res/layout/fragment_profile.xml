@@ -3,11 +3,11 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProfileFragment"
     android:background="@drawable/profile_background"
-    >
+    tools:context=".ui.fragment.ProfileFragment">
 
     <!--grid background-->
     <de.hdodenhof.circleimageview.CircleImageView
@@ -17,12 +17,11 @@
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
+        app:civ_border_color="@color/custom02"
+        app:civ_border_width="3dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:civ_border_width="4dp"
-        app:civ_border_color="@color/custom02"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/edit_text_name"
@@ -31,17 +30,16 @@
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
+        android:background="@android:color/transparent"
+        android:fontFamily="@font/rubik_lightitalic"
+        android:imeOptions="actionDone"
+        android:inputType="text"
+        android:maxLines="1"
+        android:textColor="@android:color/tab_indicator_text"
         android:textSize="32sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_view"
-        android:fontFamily="@font/rubik_lightitalic"
-        android:textColor="@android:color/tab_indicator_text"
-        android:background="@color/transparent"
-        android:maxLines="1"
-        android:imeOptions="actionDone"
-        android:inputType="text"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/image_view" />
 
     <EditText
         android:id="@+id/edit_text_phone"
@@ -50,17 +48,16 @@
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:background="@android:color/transparent"
+        android:fontFamily="@font/rubik_bold"
+        android:imeOptions="actionDone"
+        android:inputType="number"
+        android:maxLines="1"
+        android:textColor="@android:color/tab_indicator_text"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_text_name"
-        android:fontFamily="@font/rubik_bold"
-        android:textColor="@android:color/tab_indicator_text"
-        android:background="@color/transparent"
-        android:maxLines="1"
-        android:imeOptions="actionDone"
-        android:inputType="number"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/edit_text_name" />
 
     <EditText
         android:id="@+id/edit_text_email"
@@ -69,20 +66,19 @@
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        android:fontFamily="@font/rubik_mediumitalic"
+        android:imeOptions="actionDone"
+        android:inputType="textEmailAddress"
+        android:maxLines="1"
+        android:textColor="@android:color/tab_indicator_text"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_text_phone"
-        android:fontFamily="@font/rubik_mediumitalic"
-        android:textColor="@android:color/tab_indicator_text"
-        android:background="@color/transparent"
-        android:maxLines="1"
-        android:imeOptions="actionDone"
-        android:inputType="textEmailAddress"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/edit_text_phone" />
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/constraint_layout_button_background"
+        android:id="@+id/constraintLayoutButtons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -116,8 +112,8 @@
             android:layout_marginTop="24dp"
             android:background="@drawable/profile_buttons"
             android:fontFamily="@font/rubik_light"
-            android:paddingVertical="4dp"
             android:paddingHorizontal="24dp"
+            android:paddingVertical="4dp"
             android:text="Logout"
             android:textAlignment="center"
             app:layout_constraintBottom_toBottomOf="parent"

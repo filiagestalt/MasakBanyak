@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorAccentDark"
-    tools:context="com.baskom.masakbanyak.RegisterActivity">
+    tools:context=".ui.activity.RegisterActivity">
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/top_icon"
@@ -14,7 +14,6 @@
         android:layout_marginTop="10dp"
         android:paddingRight="11dp"
         app:srcCompat="@drawable/ic_logo_icon" />
-
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -107,13 +106,6 @@
             android:textSize="@dimen/button_size_text"
             android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/et_konfirmasiPassword_reg" />
-
-        <com.bartoszlipinski.constraint.StaggeredAnimationGroup
-            android:id="@+id/groupDaftarForm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:constraint_referenced_ids="et_nama_reg,et_email_reg,et_phone_reg,et_password_reg,
-            et_konfirmasiPassword_reg,btn_daftar" />
 
     </android.support.constraint.ConstraintLayout>
 

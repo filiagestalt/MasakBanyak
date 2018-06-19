@@ -6,6 +6,7 @@ android {
         applicationId "com.baskom.masakbanyak"
         minSdkVersion 19
         targetSdkVersion 26
+        multiDexEnabled true
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -19,48 +20,52 @@ android {
     }
     productFlavors {
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+ext{
+    supportLibVersion = "26.1.0"
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    implementation 'com.android.support:support-vector-drawable:26.1.0'
-    implementation 'com.android.support:support-v4:26.1.0'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    implementation 'com.android.support:design:27.1.0'
-    //animasi
-    implementation 'com.bartoszlipinski.constraint:staggeredanimationgroup:1.0.0'
-    // obviously, you will also need those two:
-    implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta1'
-    implementation 'com.android.support:transition:26.1.0'
-    //nliveo
-    implementation 'br.com.liveo:navigationdrawer-material:2.5.1'
+
+    //multidex
+    implementation 'com.android.support:multidex:1.0.3'
     //guava
-    implementation 'com.google.guava:guava:24.1-android'
+    api 'com.google.guava:guava:25.1-android'
     //retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
-    //jwt decode
-    implementation 'com.auth0.android:jwtdecode:1.1.1'
-    //android-spinkit
-    implementation 'com.github.ybq:Android-SpinKit:1.1.0'
     //picasso
     implementation 'com.squareup.picasso:picasso:2.71828'
-    //circular image view
+    //jwt decode
+    implementation 'com.auth0.android:jwtdecode:1.1.1'
+    //dagger
+    implementation 'com.google.dagger:dagger:2.16'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.16'
+    annotationProcessor 'com.google.dagger:dagger-android-processor:2.16'
+    //architecture components - lifecycle
+    implementation "android.arch.lifecycle:extensions:1.1.1"
+    //midtrans sdk
+    implementation 'com.midtrans:uikit:1.19.2-SANDBOX'
+
+    //constraintlayout
+    implementation 'com.android.support.constraint:constraint-layout:1.1.1'
+    //android-spinkit
+    implementation 'com.github.ybq:Android-SpinKit:1.1.0'
+    //circleimageview
     implementation 'de.hdodenhof:circleimageview:2.2.0'
-    //apache commons io
-    implementation group: 'commons-io', name: 'commons-io', version: '2.6'
     //waveloadingview
     implementation 'me.itangqi.waveloadingview:library:0.3.5'
     //stepper touch
     implementation 'com.github.DanielMartinus:Stepper-Touch:0.6'
-    //cardview
-    implementation 'com.android.support:cardview-v7:26.1.0'
     //shape of view
     implementation 'com.github.florent37:shapeofview:1.1.2'
     //datetimepicker
     implementation 'com.wdullaer:materialdatetimepicker:3.6.0'
+
 }

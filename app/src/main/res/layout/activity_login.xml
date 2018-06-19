@@ -5,28 +5,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context="com.baskom.masakbanyak.LoginActivity">
+    tools:context=".ui.activity.LoginActivity">
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/top_icon"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:layout_marginTop="15dp"
-        android:paddingRight="11dp"
+        android:layout_marginTop="44dp"
+        android:layout_alignParentTop="true"
+        android:paddingStart="0dp"
+        android:paddingEnd="11dp"
         app:srcCompat="@drawable/ic_logo_icon_color" />
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_centerHorizontal="true"
         android:layout_below="@id/top_icon"
-        android:layout_marginVertical="10dp">
+        android:layout_marginTop="64dp">
 
         <android.support.v7.widget.AppCompatAutoCompleteTextView
             android:id="@+id/et_email"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginHorizontal="40dp"
-            android:background="@drawable/rectangle_background_gray"
+            android:background="@drawable/rectangle_background_white"
             android:drawableLeft="@drawable/ic_email_gray"
             android:drawablePadding="@dimen/activity_horizontal_margin"
             android:hint="Email"
@@ -37,15 +41,16 @@
 
         <android.support.v7.widget.AppCompatAutoCompleteTextView
             android:id="@+id/et_password"
-            android:inputType="textPassword"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_below="@id/et_email"
             android:layout_marginHorizontal="40dp"
-            android:background="@drawable/rectangle_background_gray"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/rectangle_background_white"
             android:drawableLeft="@drawable/ic_key_gray"
             android:drawablePadding="@dimen/activity_horizontal_margin"
             android:hint="Kata Sandi"
+            android:inputType="textPassword"
             android:paddingLeft="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -71,56 +76,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/et_password" />
 
-        <RelativeLayout
-            android:id="@+id/relative_loginandregister"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="5dp"
-            android:elevation="5dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/button_login">
-
-            <Button
-                android:id="@+id/btn_pre_login"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/radius_pre_login"
-                android:text="Login"
-                android:textColor="@color/white"
-                android:textSize="@dimen/button_size_text"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/btn_pre_daftar"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/btn_pre_login"
-                android:background="@drawable/radius_pre_register"
-                android:text="Daftar"
-                android:textColor="@color/colorAccentDark"
-                android:textSize="@dimen/button_size_text"
-                android:textStyle="bold" />
-
-        </RelativeLayout>
-
-        <com.bartoszlipinski.constraint.StaggeredAnimationGroup
-            android:id="@+id/groupLoginForm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:constraint_referenced_ids="et_email, et_password, button_login" />
-
-        <com.bartoszlipinski.constraint.StaggeredAnimationGroup
-            android:id="@+id/groupLoginRegisterBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:constraint_referenced_ids="relative_loginandregister" />
-
-
     </android.support.constraint.ConstraintLayout>
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:clickable="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:backgroundTintMode="src_atop"
+        app:backgroundTint="@color/custom02"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="32dp"
+        app:srcCompat="@drawable/heart"
+        app:fabSize="auto"/>
 
 </RelativeLayout>
