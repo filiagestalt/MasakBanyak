@@ -26,7 +26,7 @@ android {
     }
 }
 
-ext{
+ext {
     supportLibVersion = "26.1.0"
 }
 
@@ -55,8 +55,6 @@ dependencies {
 
     //constraintlayout
     implementation 'com.android.support.constraint:constraint-layout:1.1.1'
-    //android-spinkit
-    implementation 'com.github.ybq:Android-SpinKit:1.1.0'
     //circleimageview
     implementation 'de.hdodenhof:circleimageview:2.2.0'
     //waveloadingview

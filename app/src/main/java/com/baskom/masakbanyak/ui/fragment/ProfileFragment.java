@@ -3,7 +3,6 @@ package com.baskom.masakbanyak.ui.fragment;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,6 +14,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,29 +23,19 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.auth0.android.jwt.JWT;
 import com.baskom.masakbanyak.MasakBanyakApplication;
 import com.baskom.masakbanyak.model.Customer;
-import com.baskom.masakbanyak.ui.ViewModelFactory;
-import com.baskom.masakbanyak.ui.fragment.viewmodel.ProfileViewModel;
-import com.baskom.masakbanyak.webservice.MasakBanyakWebService;
+import com.baskom.masakbanyak.viewmodel.CustomerViewModel;
+import com.baskom.masakbanyak.viewmodel.ViewModelFactory;
 import com.baskom.masakbanyak.R;
-import com.baskom.masakbanyak.ui.activity.LoginActivity;
-import com.github.ybq.android.spinkit.style.FoldingCube;
 import com.google.common.io.ByteStreams;
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import javax.inject.Inject;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
 
 import static android.app.Activity.RESULT_OK;
 import static com.baskom.masakbanyak.Constants.MASAKBANYAK_URL;
@@ -53,14 +43,15 @@ import static com.baskom.masakbanyak.Constants.PICK_IMAGE_REQUEST_CODE;
 
 public class ProfileFragment extends Fragment {
   
-  private Customer mCustomer;
-  
   @Inject
   ViewModelFactory mViewModelFactory;
   
-  private ProfileViewModel mProfileViewModel;
+  private CustomerViewModel mCustomerViewModel;
+  
+  private Customer mCustomer;
   
   private CoordinatorLayout mCoordinatorLayout;
+  private SwipeRefreshLayout mRefreshLayout;
   private ConstraintLayout mConstraintLayout;
   private CircleImageView mImageView;
   private EditText mEditTextName;
@@ -68,7 +59,6 @@ public class ProfileFragment extends Fragment {
   private EditText mEditTextEmail;
   private Button mButtonUpdateProfile;
   private Button mButtonLogout;
-  private ProgressBar mProgressBar;
   
   private ProfileFragmentInteractionListener mListener;
   
@@ -82,7 +72,7 @@ public class ProfileFragment extends Fragment {
     
     MasakBanyakApplication.getInstance().getApplicationComponent().inject(this);
     
-    mProfileViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ProfileViewModel.class);
+    mCustomerViewModel = ViewModelProviders.of(this, mViewModelFactory).get(CustomerViewModel.class);
   }
   
   @Override
@@ -90,14 +80,14 @@ public class ProfileFragment extends Fragment {
     View view = inflater.inflate(R.layout.fragment_profile, container, false);
     
     mCoordinatorLayout = getActivity().findViewById(R.id.coordinatorLayout);
-    mConstraintLayout = view.findViewById(R.id.constraintLayoutButtons);
+    mRefreshLayout = view.findViewById(R.id.refreshLayout);
+    mConstraintLayout = view.findViewById(R.id.constraintLayout);
     mImageView = view.findViewById(R.id.image_view);
     mEditTextName = view.findViewById(R.id.edit_text_name);
     mEditTextPhone = view.findViewById(R.id.edit_text_phone);
     mEditTextEmail = view.findViewById(R.id.edit_text_email);
     mButtonUpdateProfile = view.findViewById(R.id.button_update);
     mButtonLogout = view.findViewById(R.id.button_logout);
-    mProgressBar = view.findViewById(R.id.progress_bar);
     
     return view;
   }
@@ -106,43 +96,40 @@ public class ProfileFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     
-    FoldingCube foldingCube = new FoldingCube();
-    foldingCube.setColor(ContextCompat.getColor(view.getContext(), R.color.colorPrimaryDark));
+    mConstraintLayout.setVisibility(View.INVISIBLE);
     
-    mProgressBar.setIndeterminateDrawable(foldingCube);
+    mRefreshLayout.setRefreshing(true);
+    mRefreshLayout.setOnRefreshListener(mCustomerViewModel::refreshCustomer);
     
     mImageView.setOnClickListener(v -> {
       Intent intent = new Intent();
       intent.setType("image/jpeg");
       intent.setAction(Intent.ACTION_GET_CONTENT);
-      startActivityForResult(
-          Intent.createChooser(intent, "Select Picture"),
-          PICK_IMAGE_REQUEST_CODE
-      );
+      startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST_CODE);
     });
     
     mButtonUpdateProfile.setOnClickListener(v -> {
+      mRefreshLayout.setRefreshing(true);
+      
       mCustomer.setName(mEditTextName.getText().toString());
       mCustomer.setPhone(mEditTextPhone.getText().toString());
       mCustomer.setEmail(mEditTextEmail.getText().toString());
       
-      mProfileViewModel.updateProfile(mCustomer);
+      mCustomerViewModel.updateProfile(mCustomer);
     });
     
-    mButtonLogout.setOnClickListener(v -> mProfileViewModel.logout());
-    
-    mImageView.setVisibility(View.INVISIBLE);
-    mEditTextName.setVisibility(View.INVISIBLE);
-    mEditTextPhone.setVisibility(View.INVISIBLE);
-    mEditTextEmail.setVisibility(View.INVISIBLE);
-    mConstraintLayout.setVisibility(View.INVISIBLE);
+    mButtonLogout.setOnClickListener(v -> {
+      mRefreshLayout.setRefreshing(true);
+      
+      mCustomerViewModel.logout();
+    });
   }
   
   @Override
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
     
-    mProfileViewModel.getCustomerLiveData().observe(this, customer -> {
+    mCustomerViewModel.getCustomerLiveData().observe(this, customer -> {
       this.mCustomer = customer;
       Picasso.get().load(MASAKBANYAK_URL + customer.getAvatar()).into(mImageView);
       
@@ -150,15 +137,11 @@ public class ProfileFragment extends Fragment {
       mEditTextPhone.setText(customer.getPhone());
       mEditTextEmail.setText(customer.getEmail());
       
-      mProgressBar.setVisibility(View.GONE);
-      mImageView.setVisibility(View.VISIBLE);
-      mEditTextName.setVisibility(View.VISIBLE);
-      mEditTextPhone.setVisibility(View.VISIBLE);
-      mEditTextEmail.setVisibility(View.VISIBLE);
+      mRefreshLayout.setRefreshing(false);
       mConstraintLayout.setVisibility(View.VISIBLE);
     });
     
-    mProfileViewModel.getNotificationEventLiveData().observe(this, notificationEvent -> {
+    mCustomerViewModel.getNotificationEventLiveData().observe(this, notificationEvent -> {
       String notification = notificationEvent.getContentIfNotHandled();
       
       if (notification != null) {
@@ -171,8 +154,8 @@ public class ProfileFragment extends Fragment {
   public void onDestroyView() {
     super.onDestroyView();
     
-    mProfileViewModel.getCustomerLiveData().removeObservers(this);
-    mProfileViewModel.getNotificationEventLiveData().removeObservers(this);
+    mCustomerViewModel.getCustomerLiveData().removeObservers(this);
+    mCustomerViewModel.getNotificationEventLiveData().removeObservers(this);
   }
   
   @Override
@@ -222,7 +205,7 @@ public class ProfileFragment extends Fragment {
         Toast.makeText(getContext(), e.toString(), Toast.LENGTH_LONG).show();
       }
       
-      mProfileViewModel.uploadProfileAvatar(mCustomer, filename, file);
+      mCustomerViewModel.uploadProfileAvatar(mCustomer, filename, file);
     }
   }
   

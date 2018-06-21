@@ -1,4 +1,4 @@
-package com.baskom.masakbanyak.ui;
+package com.baskom.masakbanyak.viewmodel;
 
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;

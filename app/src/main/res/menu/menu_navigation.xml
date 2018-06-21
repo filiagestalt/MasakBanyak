@@ -3,15 +3,15 @@
 
     <item
         android:id="@+id/navigation_home"
-        android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="Beranda" />
+        android:icon="@drawable/ic_store_24dp"
+        android:title="Katering" />
     <item
         android:id="@+id/navigation_transaction"
         android:icon="@drawable/ic_transaksi_black_24dp"
         android:title="Transaksi" />
     <item
         android:id="@+id/navigation_profile"
-        android:icon="@drawable/ic_person_gray"
-        android:title="Akun"
+        android:icon="@drawable/ic_face_gray_24dp"
+        android:title="Profil"
         />
 </menu>

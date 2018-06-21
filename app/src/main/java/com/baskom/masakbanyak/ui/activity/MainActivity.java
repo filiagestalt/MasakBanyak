@@ -1,7 +1,7 @@
 package com.baskom.masakbanyak.ui.activity;
 
 import android.content.Intent;
-import android.net.Uri;
+import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -12,69 +12,88 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v7.widget.SearchView;
+import android.view.View;
 
+import com.baskom.masakbanyak.MasakBanyakApplication;
+import com.baskom.masakbanyak.repository.CateringRepository;
+import com.baskom.masakbanyak.repository.CustomerRepository;
+import com.baskom.masakbanyak.repository.OrderRepository;
 import com.baskom.masakbanyak.util.BottomNavigationHelper;
 import com.baskom.masakbanyak.model.Catering;
 import com.baskom.masakbanyak.ui.fragment.CateringsFragment;
 import com.baskom.masakbanyak.ui.fragment.ProfileFragment;
 import com.baskom.masakbanyak.R;
-import com.baskom.masakbanyak.ui.fragment.TransactionFragment;
+import com.baskom.masakbanyak.ui.fragment.TransactionsFragment;
+
+import javax.inject.Inject;
 
 public class MainActivity extends AppCompatActivity
-    implements CateringsFragment.HomeFragmentInteractionListener,
-    TransactionFragment.TransactionFragmentInteractionListener,
+    implements CateringsFragment.CateringsFragmentInteractionListener,
+    TransactionsFragment.TransactionFragmentInteractionListener,
     ProfileFragment.ProfileFragmentInteractionListener {
+  
+  @Inject
+  CateringRepository mCateringRepository;
+  //@Inject
+  //OrderRepository mOrderRepository;
+  @Inject
+  CustomerRepository mCustomerRepository;
   
   private Toolbar mToolbar;
   private SearchView mSearchView;
   private BottomNavigationView mBottomNavigation;
   
-  private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-      = item -> {
-        FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-        Fragment fragment = manager.findFragmentById(R.id.content);
-        
-        switch (item.getItemId()) {
-          case R.id.navigation_home:
-            if (!(fragment instanceof CateringsFragment)) {
-              transaction.replace(R.id.content, CateringsFragment.newInstance());
-              transaction.addToBackStack(null);
-              transaction.commit();
-            }
-            return true;
-          case R.id.navigation_transaction:
-            if (!(fragment instanceof TransactionFragment)) {
-              transaction.replace(R.id.content, TransactionFragment.newInstance("01", "02"));
-              transaction.addToBackStack(null);
-              transaction.commit();
-            }
-            return true;
-          case R.id.navigation_profile:
-            if (!(fragment instanceof ProfileFragment)) {
-              transaction.replace(R.id.content, ProfileFragment.newInstance());
-              transaction.addToBackStack(null);
-              transaction.commit();
-            }
-            return true;
+  private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = item -> {
+    FragmentManager manager = getSupportFragmentManager();
+    FragmentTransaction transaction = manager.beginTransaction();
+    Fragment fragment = manager.findFragmentById(R.id.content);
+    
+    switch (item.getItemId()) {
+      case R.id.navigation_home:
+        if (!(fragment instanceof CateringsFragment)) {
+          transaction.replace(R.id.content, CateringsFragment.newInstance());
+          transaction.addToBackStack(null);
+          transaction.commit();
         }
-        return false;
-      };
+        return true;
+      case R.id.navigation_transaction:
+        if (!(fragment instanceof TransactionsFragment)) {
+          transaction.replace(R.id.content, TransactionsFragment.newInstance());
+          transaction.addToBackStack(null);
+          transaction.commit();
+        }
+        return true;
+      case R.id.navigation_profile:
+        if (!(fragment instanceof ProfileFragment)) {
+          transaction.replace(R.id.content, ProfileFragment.newInstance());
+          transaction.addToBackStack(null);
+          transaction.commit();
+        }
+        return true;
+    }
+    return false;
+  };
   
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     
-    mBottomNavigation = findViewById(R.id.navigation);
-    mBottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-    
-    BottomNavigationHelper.removeShiftMode(mBottomNavigation);
+    MasakBanyakApplication.getInstance().getApplicationComponent().inject(this);
     
     mToolbar = findViewById(R.id.toolbar);
+    mBottomNavigation = findViewById(R.id.navigation);
+  }
+  
+  @Override
+  protected void onStart() {
+    super.onStart();
     
     setSupportActionBar(mToolbar);
     getSupportActionBar().setDisplayShowTitleEnabled(false);
+    
+    BottomNavigationHelper.removeShiftMode(mBottomNavigation);
+    mBottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     
     FragmentManager manager = getSupportFragmentManager();
     FragmentTransaction transaction = manager.beginTransaction();
@@ -93,7 +112,7 @@ public class MainActivity extends AppCompatActivity
       Fragment fragment = manager.findFragmentById(R.id.content);
       if (fragment instanceof CateringsFragment) {
         mBottomNavigation.setSelectedItemId(R.id.navigation_home);
-      } else if (fragment instanceof TransactionFragment) {
+      } else if (fragment instanceof TransactionsFragment) {
         mBottomNavigation.setSelectedItemId(R.id.navigation_transaction);
       } else if (fragment instanceof ProfileFragment) {
         mBottomNavigation.setSelectedItemId(R.id.navigation_profile);
@@ -104,9 +123,12 @@ public class MainActivity extends AppCompatActivity
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.menu_main, menu);
+    
     MenuItem searchItem = menu.findItem(R.id.action_search);
     
     mSearchView = (SearchView) searchItem.getActionView();
+    View searchViewUnderline = mSearchView.findViewById(android.support.v7.appcompat.R.id.search_plate);
+    searchViewUnderline.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
     mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
       @Override
       public boolean onQueryTextSubmit(String query) {
@@ -136,7 +158,7 @@ public class MainActivity extends AppCompatActivity
   }
   
   @Override
-  public void onTransactionFragmentInteraction(Uri uri) {
+  public void onTransactionFragmentInteraction() {
   
   }
   

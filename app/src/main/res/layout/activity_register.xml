@@ -1,113 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorAccentDark"
-    tools:context=".ui.activity.RegisterActivity">
+    android:layout_height="match_parent">
 
-    <android.support.v7.widget.AppCompatImageView
-        android:id="@+id/top_icon"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:paddingRight="11dp"
-        app:srcCompat="@drawable/ic_logo_icon" />
+        android:layout_height="match_parent"
+        android:background="@color/colorAccentDark"
+        tools:context=".ui.activity.RegisterActivity">
 
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/top_icon"
-        android:layout_marginTop="15dp">
-
-        <android.support.v7.widget.AppCompatAutoCompleteTextView
-            android:inputType="text"
-            android:id="@+id/et_nama_reg"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginHorizontal="40dp"
-            android:background="@drawable/rectange_background_white"
-            android:drawableLeft="@drawable/ic_person_gray"
-            android:drawablePadding="@dimen/activity_horizontal_margin"
-            android:hint="Nama"
-            android:paddingLeft="20dp" />
-
-        <android.support.v7.widget.AppCompatAutoCompleteTextView
-            android:inputType="numberDecimal"
-            android:id="@+id/et_phone_reg"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@id/et_nama_reg"
-            android:layout_marginHorizontal="40dp"
-            android:layout_marginTop="2dp"
-            android:background="@drawable/rectange_background_white"
-            android:drawableLeft="@drawable/ic_phone_gray"
-            android:drawablePadding="@dimen/activity_horizontal_margin"
-            android:hint="Nomor Telepon"
-            android:paddingLeft="20dp"
-            app:layout_constraintTop_toBottomOf="@id/et_nama_reg" />
-
-        <android.support.v7.widget.AppCompatAutoCompleteTextView
-            android:inputType="textEmailAddress"
-            android:id="@+id/et_email_reg"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@id/et_phone_reg"
-            android:layout_marginHorizontal="40dp"
-            android:layout_marginTop="2dp"
-            android:background="@drawable/rectange_background_white"
-            android:drawableLeft="@drawable/ic_email_gray"
-            android:drawablePadding="@dimen/activity_horizontal_margin"
-            android:hint="Email"
-            android:paddingLeft="20dp"
-            app:layout_constraintTop_toBottomOf="@id/et_phone_reg" />
-
-        <android.support.v7.widget.AppCompatAutoCompleteTextView
-            android:inputType="textPassword"
-            android:id="@+id/et_password_reg"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@id/et_email_reg"
-            android:layout_marginHorizontal="40dp"
-            android:layout_marginTop="2dp"
-            android:background="@drawable/rectange_background_white"
-            android:drawableLeft="@drawable/ic_key_gray"
-            android:drawablePadding="@dimen/activity_horizontal_margin"
-            android:hint="Kata Sandi"
-            android:paddingLeft="20dp"
-            app:layout_constraintTop_toBottomOf="@id/et_email_reg" />
-
-        <android.support.v7.widget.AppCompatAutoCompleteTextView
-            android:inputType="textPassword"
-            android:id="@+id/et_konfirmasiPassword_reg"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@id/et_password_reg"
-            android:layout_marginHorizontal="40dp"
-            android:layout_marginTop="2dp"
-            android:background="@drawable/rectange_background_white"
-            android:drawableLeft="@drawable/ic_key_gray"
-            android:drawablePadding="@dimen/activity_horizontal_margin"
-            android:hint="Konfirmasi Kata Sandi"
-            android:paddingLeft="20dp"
-            app:layout_constraintTop_toBottomOf="@id/et_password_reg" />
-
-        <Button
-            android:id="@+id/btn_daftar"
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/top_icon"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/et_konfirmasiPassword_reg"
-            android:layout_marginHorizontal="40dp"
             android:layout_marginTop="10dp"
-            android:background="@drawable/radius_box_white"
-            android:text="Daftar"
-            android:textColor="@color/colorAccentDark"
-            android:textSize="@dimen/button_size_text"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/et_konfirmasiPassword_reg" />
+            android:paddingRight="11dp"
+            app:srcCompat="@drawable/ic_logo_icon" />
 
-    </android.support.constraint.ConstraintLayout>
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/top_icon"
+            android:layout_marginTop="15dp">
+
+            <android.support.v7.widget.AppCompatAutoCompleteTextView
+                android:id="@+id/et_nama_reg"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginHorizontal="40dp"
+                android:background="@drawable/rectange_background_white"
+                android:drawableLeft="@drawable/ic_person_gray"
+                android:drawablePadding="@dimen/activity_horizontal_margin"
+                android:hint="Nama"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:paddingLeft="20dp" />
+
+            <android.support.v7.widget.AppCompatAutoCompleteTextView
+                android:id="@+id/et_phone_reg"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/et_nama_reg"
+                android:layout_marginHorizontal="40dp"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/rectange_background_white"
+                android:drawableLeft="@drawable/ic_phone_gray"
+                android:drawablePadding="@dimen/activity_horizontal_margin"
+                android:hint="Nomor Telepon"
+                android:imeOptions="actionDone"
+                android:inputType="numberDecimal"
+                android:paddingLeft="20dp"
+                app:layout_constraintTop_toBottomOf="@id/et_nama_reg" />
+
+            <android.support.v7.widget.AppCompatAutoCompleteTextView
+                android:id="@+id/et_email_reg"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/et_phone_reg"
+                android:layout_marginHorizontal="40dp"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/rectange_background_white"
+                android:drawableLeft="@drawable/ic_email_gray"
+                android:drawablePadding="@dimen/activity_horizontal_margin"
+                android:hint="Email"
+                android:imeOptions="actionDone"
+                android:inputType="textEmailAddress"
+                android:paddingLeft="20dp"
+                app:layout_constraintTop_toBottomOf="@id/et_phone_reg" />
+
+            <android.support.v7.widget.AppCompatAutoCompleteTextView
+                android:id="@+id/et_password_reg"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/et_email_reg"
+                android:layout_marginHorizontal="40dp"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/rectange_background_white"
+                android:drawableLeft="@drawable/ic_key_gray"
+                android:drawablePadding="@dimen/activity_horizontal_margin"
+                android:hint="Kata Sandi"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
+                android:paddingLeft="20dp"
+                app:layout_constraintTop_toBottomOf="@id/et_email_reg" />
+
+            <android.support.v7.widget.AppCompatAutoCompleteTextView
+                android:id="@+id/et_konfirmasiPassword_reg"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/et_password_reg"
+                android:layout_marginHorizontal="40dp"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/rectange_background_white"
+                android:drawableLeft="@drawable/ic_key_gray"
+                android:drawablePadding="@dimen/activity_horizontal_margin"
+                android:hint="Konfirmasi Kata Sandi"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
+                android:paddingLeft="20dp"
+                app:layout_constraintTop_toBottomOf="@id/et_password_reg" />
+
+            <Button
+                android:id="@+id/btn_daftar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/et_konfirmasiPassword_reg"
+                android:layout_marginHorizontal="40dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/radius_box_white"
+                android:text="Daftar"
+                android:textColor="@color/colorAccentDark"
+                android:textSize="@dimen/button_size_text"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@id/et_konfirmasiPassword_reg" />
+
+        </android.support.constraint.ConstraintLayout>
 
 
-</RelativeLayout>
+    </RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

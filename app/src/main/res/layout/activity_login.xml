@@ -1,94 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
-    tools:context=".ui.activity.LoginActivity">
+    android:layout_height="match_parent">
 
-    <android.support.v7.widget.AppCompatImageView
-        android:id="@+id/top_icon"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_marginTop="44dp"
-        android:layout_alignParentTop="true"
-        android:paddingStart="0dp"
-        android:paddingEnd="11dp"
-        app:srcCompat="@drawable/ic_logo_icon_color" />
-
-    <android.support.constraint.ConstraintLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/top_icon"
-        android:layout_marginTop="64dp">
+        android:background="@color/white"
+        tools:context=".ui.activity.LoginActivity">
 
-        <android.support.v7.widget.AppCompatAutoCompleteTextView
-            android:id="@+id/et_email"
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/top_icon"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginHorizontal="40dp"
-            android:background="@drawable/rectangle_background_white"
-            android:drawableLeft="@drawable/ic_email_gray"
-            android:drawablePadding="@dimen/activity_horizontal_margin"
-            android:hint="Email"
-            android:paddingLeft="20dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:layout_height="100dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="44dp"
+            android:paddingEnd="11dp"
+            android:paddingStart="0dp"
+            app:srcCompat="@drawable/ic_logo_icon_color" />
 
-        <android.support.v7.widget.AppCompatAutoCompleteTextView
-            android:id="@+id/et_password"
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_below="@id/et_email"
-            android:layout_marginHorizontal="40dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/rectangle_background_white"
-            android:drawableLeft="@drawable/ic_key_gray"
-            android:drawablePadding="@dimen/activity_horizontal_margin"
-            android:hint="Kata Sandi"
-            android:inputType="textPassword"
-            android:paddingLeft="20dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/et_email" />
-
-        <Button
-            android:id="@+id/button_login"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/et_password"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/top_icon"
             android:layout_centerHorizontal="true"
-            android:layout_marginHorizontal="40dp"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/radius_box"
-            android:elevation="5dp"
-            android:text="Login"
-            android:textColor="@color/white"
-            android:textSize="@dimen/button_size_text"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/et_password" />
+            android:layout_marginTop="64dp">
 
-    </android.support.constraint.ConstraintLayout>
+            <android.support.v7.widget.AppCompatAutoCompleteTextView
+                android:id="@+id/et_email"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginHorizontal="40dp"
+                android:background="@drawable/rectangle_background_white"
+                android:drawableLeft="@drawable/ic_email_gray"
+                android:drawablePadding="@dimen/activity_horizontal_margin"
+                android:hint="Email"
+                android:imeOptions="actionDone"
+                android:inputType="textEmailAddress"
+                android:maxLines="1"
+                android:paddingLeft="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:clickable="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:backgroundTintMode="src_atop"
-        app:backgroundTint="@color/custom02"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_margin="32dp"
-        app:srcCompat="@drawable/heart"
-        app:fabSize="auto"/>
+            <android.support.v7.widget.AppCompatAutoCompleteTextView
+                android:id="@+id/et_password"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_below="@id/et_email"
+                android:layout_marginHorizontal="40dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rectangle_background_white"
+                android:drawableLeft="@drawable/ic_key_gray"
+                android:drawablePadding="@dimen/activity_horizontal_margin"
+                android:hint="Kata Sandi"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
+                android:paddingLeft="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/et_email" />
 
-</RelativeLayout>
+            <Button
+                android:id="@+id/button_login"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/et_password"
+                android:layout_centerHorizontal="true"
+                android:layout_marginHorizontal="40dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/radius_box"
+                android:elevation="5dp"
+                android:text="Login"
+                android:textColor="@color/white"
+                android:textSize="@dimen/button_size_text"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/et_password" />
+
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_margin="32dp"
+            android:clickable="true"
+            app:backgroundTint="@color/custom02"
+            app:backgroundTintMode="src_atop"
+            app:fabSize="auto"
+            app:srcCompat="@drawable/heart" />
+
+    </RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

@@ -42,10 +42,11 @@ public class CustomerRepository {
     this.preferences = preferences;
     this.jwt = jwt;
     this.webService = webService;
+    
+    refreshCustomer();
   }
   
   public LiveData<Customer> getCustomerLiveData() {
-    refreshProfile();
     return customerLiveData;
   }
   
@@ -53,7 +54,7 @@ public class CustomerRepository {
     return notificationEventLiveData;
   }
   
-  public void refreshProfile() {
+  public void refreshCustomer() {
     Util.authorizeAndExecuteCall(preferences, jwt, webService, (access_token, webservice) -> {
       String authorization = "Bearer " + access_token;
       String customer_id = jwt.getClaim("customer_id").asString();
@@ -74,7 +75,7 @@ public class CustomerRepository {
     });
   }
   
-  public void uploadProfileAvatar(Customer customer, String filename, byte[] file) {
+  public void uploadCustomerAvatar(Customer customer, String filename, byte[] file) {
     Util.authorizeAndExecuteCall(preferences, jwt, webService, (access_token, webservice) -> {
       String authorization = "Bearer " + access_token;
       
@@ -89,7 +90,7 @@ public class CustomerRepository {
           if (response.isSuccessful()) {
             try {
               notificationEventLiveData.postValue(new Util.Event<>(response.body().string()));
-              refreshProfile();
+              refreshCustomer();
             } catch (IOException e) {
               e.printStackTrace();
             }
@@ -104,7 +105,7 @@ public class CustomerRepository {
     });
   }
   
-  public void updateProfile(Customer customer) {
+  public void updateCustomer(Customer customer) {
     Util.authorizeAndExecuteCall(preferences, jwt, webService, (access_token, webservice) -> {
       String authorization = "Bearer " + access_token;
       
@@ -122,6 +123,7 @@ public class CustomerRepository {
           if (response.isSuccessful()) {
             try {
               notificationEventLiveData.postValue(new Util.Event<>(response.body().string()));
+              refreshCustomer();
             } catch (IOException e) {
               e.printStackTrace();
             }

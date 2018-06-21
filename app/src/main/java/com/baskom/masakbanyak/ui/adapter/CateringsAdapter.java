@@ -21,11 +21,10 @@ import me.itangqi.waveloadingview.WaveLoadingView;
 import static com.baskom.masakbanyak.Constants.MASAKBANYAK_URL;
 
 public class CateringsAdapter extends RecyclerView.Adapter<CateringsAdapter.ViewHolder> {
-  
   private ArrayList<Catering> caterings = new ArrayList<>();
-  private CateringsFragment.HomeFragmentInteractionListener listener;
+  private CateringsFragment.CateringsFragmentInteractionListener listener;
   
-  public CateringsAdapter(CateringsFragment.HomeFragmentInteractionListener listener) {
+  public CateringsAdapter(CateringsFragment.CateringsFragmentInteractionListener listener) {
     this.listener = listener;
   }
   

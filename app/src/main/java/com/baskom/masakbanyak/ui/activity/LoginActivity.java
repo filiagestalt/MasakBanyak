@@ -3,19 +3,23 @@ package com.baskom.masakbanyak.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.baskom.masakbanyak.MasakBanyakApplication;
 import com.baskom.masakbanyak.webservice.MasakBanyakWebService;
 import com.baskom.masakbanyak.R;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
+
+import javax.inject.Inject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -26,80 +30,71 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static com.baskom.masakbanyak.Constants.MASAKBANYAK_URL;
 
 public class LoginActivity extends AppCompatActivity {
+  
+  @Inject
+  SharedPreferences preferences;
+  @Inject
+  MasakBanyakWebService webService;
+  
+  private CoordinatorLayout mCoordinatorLayout;
   private AutoCompleteTextView mEmail;
   private AutoCompleteTextView mPassword;
-  private Button mBtnLogin;
+  private Button mButtonLogin;
   private FloatingActionButton mButtonRegister;
   
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    loginCheck();
-    
     setContentView(R.layout.activity_login);
+    
+    MasakBanyakApplication.getInstance().getApplicationComponent().inject(this);
+    
+    if (preferences.contains("access_token") && preferences.contains("refresh_token")) {
+      Intent mainIntent = new Intent(this, MainActivity.class);
+      startActivity(mainIntent);
+      finish();
+    }
+    
+    mCoordinatorLayout = findViewById(R.id.coordinatorLayout);
     mEmail = findViewById(R.id.et_email);
     mPassword = findViewById(R.id.et_password);
-    mBtnLogin = findViewById(R.id.button_login);
+    mButtonLogin = findViewById(R.id.button_login);
     mButtonRegister = findViewById(R.id.fab);
+  }
+  
+  @Override
+  protected void onStart() {
+    super.onStart();
     
-    Retrofit retrofit = new Retrofit.Builder()
-        .baseUrl(MASAKBANYAK_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build();
-    final MasakBanyakWebService service = retrofit.create(MasakBanyakWebService.class);
-    
-    mBtnLogin.setOnClickListener(v -> {
+    mButtonLogin.setOnClickListener(v -> {
       String email = mEmail.getText().toString();
       String password = mPassword.getText().toString();
-      service.login(email, password).enqueue(new Callback<JsonObject>() {
+      
+      webService.login(email, password).enqueue(new Callback<JsonObject>() {
         @Override
         public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
           if (response.code() == 200) {
-            SharedPreferences sharedPref = v
-                .getContext()
-                .getSharedPreferences(
-                    getString(R.string.app_preferences_key),
-                    Context.MODE_PRIVATE
-                );
-            SharedPreferences.Editor editor = sharedPref.edit();
+            SharedPreferences.Editor editor = preferences.edit();
             
-            editor.putString(
-                "access_token",
-                response.body()
-                    .get("access_token")
-                    .getAsString()
-            );
-            editor.putString("refresh_token",
-                response.body()
-                    .get("refresh_token")
-                    .getAsString()
-            );
-            editor.commit();
+            editor.putString("access_token", response.body().get("access_token").getAsString());
+            editor.putString("refresh_token", response.body().get("refresh_token").getAsString());
+            editor.apply();
             
-            Intent intent = new Intent(
-                LoginActivity.this,
-                MainActivity.class
-            );
-            startActivity(intent);
+            Intent mainIntent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(mainIntent);
             finish();
           } else {
             try {
-              Toast.makeText(LoginActivity.this,
-                  response.errorBody().string(),
-                  Toast.LENGTH_LONG).show();
+              showError(response.errorBody().string());
             } catch (IOException e) {
-              Toast.makeText(LoginActivity.this,
-                  e.toString(),
-                  Toast.LENGTH_LONG).show();
+              e.printStackTrace();
             }
           }
         }
         
         @Override
         public void onFailure(Call<JsonObject> call, Throwable t) {
-          Toast.makeText(LoginActivity.this,
-              t.toString(),
-              Toast.LENGTH_LONG).show();
+          showError(t.toString());
         }
       });
     });
@@ -110,18 +105,7 @@ public class LoginActivity extends AppCompatActivity {
     });
   }
   
-  public void loginCheck() {
-    Intent intent;
-    SharedPreferences sharedPref = getSharedPreferences(
-        getString(R.string.app_preferences_key),
-        Context.MODE_PRIVATE
-    );
-    
-    if (sharedPref.contains("access_token") && sharedPref.contains("refresh_token")) {
-      intent = new Intent(this, MainActivity.class);
-      startActivity(intent);
-      finish();
-    }
-    
+  public void showError(String error) {
+    Snackbar.make(mCoordinatorLayout, error, Snackbar.LENGTH_SHORT).show();
   }
 }

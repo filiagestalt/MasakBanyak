@@ -1,4 +1,4 @@
-package com.baskom.masakbanyak.ui.fragment.viewmodel;
+package com.baskom.masakbanyak.viewmodel;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
@@ -9,13 +9,13 @@ import com.baskom.masakbanyak.util.Util;
 
 import javax.inject.Inject;
 
-public class ProfileViewModel extends ViewModel {
+public class CustomerViewModel extends ViewModel {
   private CustomerRepository repository;
   
   private LiveData<Customer> customerLiveData;
   private LiveData<Util.Event<String>> notificationEventLiveData;
   
-  @Inject public ProfileViewModel(CustomerRepository repository) {
+  @Inject public CustomerViewModel(CustomerRepository repository) {
     this.repository = repository;
     this.customerLiveData = repository.getCustomerLiveData();
     this.notificationEventLiveData = repository.getNotificationEventLiveData();
@@ -29,12 +29,16 @@ public class ProfileViewModel extends ViewModel {
     return notificationEventLiveData;
   }
   
+  public void refreshCustomer(){
+    repository.refreshCustomer();
+  }
+  
   public void uploadProfileAvatar(Customer customer, String filename, byte[] file){
-    repository.uploadProfileAvatar(customer, filename, file);
+    repository.uploadCustomerAvatar(customer, filename, file);
   }
   
   public void updateProfile(Customer customer){
-    repository.updateProfile(customer);
+    repository.updateCustomer(customer);
   }
   
   public void logout(){

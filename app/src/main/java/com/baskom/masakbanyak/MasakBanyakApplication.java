@@ -10,6 +10,7 @@ import com.baskom.masakbanyak.di.StorageModule;
 
 public class MasakBanyakApplication extends Application {
   private static MasakBanyakApplication instance;
+  
   private ApplicationComponent applicationComponent;
   
   @Override
@@ -33,5 +34,4 @@ public class MasakBanyakApplication extends Application {
   public ApplicationComponent getApplicationComponent() {
     return applicationComponent;
   }
-  
 }
