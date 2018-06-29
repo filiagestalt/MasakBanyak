@@ -10,7 +10,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 
-@Module(includes = {ApplicationModule.class})
+@Module
 public class StorageModule {
     @Provides
     @Singleton
@@ -26,15 +26,4 @@ public class StorageModule {
     public SharedPreferences.Editor providePreferencesEditor(SharedPreferences preferences) {
         return preferences.edit();
     }
-
-//    @Provides
-//    @Singleton
-//    public CustomerRepository providesCustomerRepository(
-//            MasakBanyakWebService webservice,
-//            SharedPreferences preferences,
-//            SharedPreferences.Editor preferencesEditor,
-//            JWT jwt
-//    ){
-//        return new CustomerRepository(webservice, preferences, preferencesEditor, jwt);
-//    }
 }

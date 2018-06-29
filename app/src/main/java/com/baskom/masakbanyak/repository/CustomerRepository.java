@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.auth0.android.jwt.JWT;
+import com.baskom.masakbanyak.di.SessionScope;
 import com.baskom.masakbanyak.ui.activity.LoginActivity;
 import com.baskom.masakbanyak.webservice.MasakBanyakWebService;
 import com.baskom.masakbanyak.model.Customer;
@@ -26,7 +27,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-@Singleton
+@SessionScope
 public class CustomerRepository {
   private MutableLiveData<Customer> customerLiveData = new MutableLiveData<>();
   private MutableLiveData<Util.Event<String>> notificationEventLiveData = new MutableLiveData<>();
@@ -90,11 +91,11 @@ public class CustomerRepository {
           if (response.isSuccessful()) {
             try {
               notificationEventLiveData.postValue(new Util.Event<>(response.body().string()));
-              refreshCustomer();
             } catch (IOException e) {
               e.printStackTrace();
             }
           }
+          refreshCustomer();
         }
         
         @Override
@@ -123,11 +124,11 @@ public class CustomerRepository {
           if (response.isSuccessful()) {
             try {
               notificationEventLiveData.postValue(new Util.Event<>(response.body().string()));
-              refreshCustomer();
             } catch (IOException e) {
               e.printStackTrace();
             }
           }
+          refreshCustomer();
         }
         
         @Override

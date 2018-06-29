@@ -21,9 +21,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baskom.masakbanyak.MasakBanyakApplication;
+import com.baskom.masakbanyak.di.Components;
 import com.baskom.masakbanyak.model.Customer;
 import com.baskom.masakbanyak.viewmodel.CustomerViewModel;
 import com.baskom.masakbanyak.viewmodel.ViewModelFactory;
@@ -56,7 +58,7 @@ public class ProfileFragment extends Fragment {
   private CircleImageView mImageView;
   private EditText mEditTextName;
   private EditText mEditTextPhone;
-  private EditText mEditTextEmail;
+  private TextView mEditTextEmail;
   private Button mButtonUpdateProfile;
   private Button mButtonLogout;
   
@@ -69,8 +71,8 @@ public class ProfileFragment extends Fragment {
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    
-    MasakBanyakApplication.getInstance().getApplicationComponent().inject(this);
+  
+    Components.getSessionComponent().inject(this);
     
     mCustomerViewModel = ViewModelProviders.of(this, mViewModelFactory).get(CustomerViewModel.class);
   }

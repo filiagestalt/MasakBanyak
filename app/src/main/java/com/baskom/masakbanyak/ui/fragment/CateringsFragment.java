@@ -14,7 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.baskom.masakbanyak.MasakBanyakApplication;
+import com.baskom.masakbanyak.di.Components;
 import com.baskom.masakbanyak.viewmodel.CateringViewModel;
 import com.baskom.masakbanyak.viewmodel.ViewModelFactory;
 import com.baskom.masakbanyak.model.Catering;
@@ -50,8 +50,8 @@ public class CateringsFragment extends Fragment {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    
-    MasakBanyakApplication.getInstance().getApplicationComponent().inject(this);
+  
+    Components.getSessionComponent().inject(this);
     
     mCateringViewModel = ViewModelProviders.of(this, mViewModelFactory).get(CateringViewModel.class);
   }
@@ -116,6 +116,6 @@ public class CateringsFragment extends Fragment {
   }
   
   public interface CateringsFragmentInteractionListener {
-    void onHomeFragmentInteraction(Catering catering);
+    void onCateringsFragmentInteraction(Catering catering);
   }
 }

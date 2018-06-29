@@ -92,11 +92,15 @@ public class Catering implements Serializable {
   }
   
   public double getTotalRating(){
-    double totalRatingValue = 0;
-    for(int i = 0; i < ratings.size(); i++){
-      totalRatingValue += ratings.get(i).getRating_value();
+    if(ratings != null){
+      double totalRatingValue = 0;
+      for(int i = 0; i < ratings.size(); i++){
+        totalRatingValue += ratings.get(i).getRating_value();
+      }
+  
+      return totalRatingValue /= ratings.size();
+    }else{
+      return 0;
     }
-    
-    return totalRatingValue /= ratings.size();
   }
 }

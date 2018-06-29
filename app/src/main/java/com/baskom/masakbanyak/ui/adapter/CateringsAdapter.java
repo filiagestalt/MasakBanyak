@@ -22,6 +22,7 @@ import static com.baskom.masakbanyak.Constants.MASAKBANYAK_URL;
 
 public class CateringsAdapter extends RecyclerView.Adapter<CateringsAdapter.ViewHolder> {
   private ArrayList<Catering> caterings = new ArrayList<>();
+  
   private CateringsFragment.CateringsFragmentInteractionListener listener;
   
   public CateringsAdapter(CateringsFragment.CateringsFragmentInteractionListener listener) {
@@ -44,7 +45,7 @@ public class CateringsAdapter extends RecyclerView.Adapter<CateringsAdapter.View
   public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
     holder.mLayout.setOnClickListener(v -> {
       if (listener != null) {
-        listener.onHomeFragmentInteraction(caterings.get(position));
+        listener.onCateringsFragmentInteraction(caterings.get(position));
       }
     });
     
@@ -56,8 +57,13 @@ public class CateringsAdapter extends RecyclerView.Adapter<CateringsAdapter.View
         .into(holder.mImageView);
     
     holder.mWaveView.setCenterTitle(Double.toString(caterings.get(position).getTotalRating()));
-    holder.mWaveView.setProgressValue((int) caterings.get(position).getTotalRating()*100/5-20);
-    holder.mWaveView.setAmplitudeRatio((int) caterings.get(position).getTotalRating()*100/5-11);
+    if(caterings.get(position).getTotalRating() == 0){
+      holder.mWaveView.setProgressValue(8);
+      holder.mWaveView.setAmplitudeRatio(8);
+    }else{
+      holder.mWaveView.setProgressValue((int) caterings.get(position).getTotalRating()*100/5-9);
+      holder.mWaveView.setAmplitudeRatio((int) caterings.get(position).getTotalRating()*100/5-9);
+    }
   }
   
   @Override
@@ -70,7 +76,7 @@ public class CateringsAdapter extends RecyclerView.Adapter<CateringsAdapter.View
     return R.layout.itemview_catering;
   }
   
-  public static class ViewHolder extends RecyclerView.ViewHolder {
+  public class ViewHolder extends RecyclerView.ViewHolder {
     private CardView mLayout;
     private ImageView mImageView;
     private TextView mTextView;

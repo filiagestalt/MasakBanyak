@@ -5,7 +5,9 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Locale;
 
 public class Order implements Serializable {
   @SerializedName("_id")
@@ -124,18 +126,5 @@ public class Order implements Serializable {
   
   public void setStatus(String status) {
     this.status = status;
-  }
-  
-  public String getOrderDateDDMMYYYY(){
-    SimpleDateFormat ISOFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    SimpleDateFormat DDMMYYYYFormat = new SimpleDateFormat("dd-MM-yyyy");
-    Date date = new Date();
-    try {
-      date = ISOFormat.parse(order_time);
-    } catch (ParseException e) {
-      e.printStackTrace();
-    }
-    
-    return DDMMYYYYFormat.format(date);
   }
 }

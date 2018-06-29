@@ -1,7 +1,6 @@
 package com.baskom.masakbanyak.ui.activity;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -15,9 +14,14 @@ import android.support.v7.widget.SearchView;
 import android.view.View;
 
 import com.baskom.masakbanyak.MasakBanyakApplication;
+import com.baskom.masakbanyak.di.Components;
+import com.baskom.masakbanyak.di.DaggerSessionComponent;
+import com.baskom.masakbanyak.di.SessionComponent;
+import com.baskom.masakbanyak.di.SessionModule;
+import com.baskom.masakbanyak.model.Order;
 import com.baskom.masakbanyak.repository.CateringRepository;
 import com.baskom.masakbanyak.repository.CustomerRepository;
-import com.baskom.masakbanyak.repository.OrderRepository;
+import com.baskom.masakbanyak.ui.fragment.SearchFragment;
 import com.baskom.masakbanyak.util.BottomNavigationHelper;
 import com.baskom.masakbanyak.model.Catering;
 import com.baskom.masakbanyak.ui.fragment.CateringsFragment;
@@ -29,19 +33,22 @@ import javax.inject.Inject;
 
 public class MainActivity extends AppCompatActivity
     implements CateringsFragment.CateringsFragmentInteractionListener,
+    SearchFragment.OnSearchFragmentInteractionListener,
     TransactionsFragment.TransactionFragmentInteractionListener,
     ProfileFragment.ProfileFragmentInteractionListener {
   
   @Inject
   CateringRepository mCateringRepository;
-  //@Inject
-  //OrderRepository mOrderRepository;
   @Inject
   CustomerRepository mCustomerRepository;
   
   private Toolbar mToolbar;
   private SearchView mSearchView;
   private BottomNavigationView mBottomNavigation;
+  
+  private CateringsFragment mCateringsFragment = CateringsFragment.newInstance();
+  private TransactionsFragment mTransactionsFragment = TransactionsFragment.newInstance();
+  private ProfileFragment mProfileFragment = ProfileFragment.newInstance();
   
   private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = item -> {
     FragmentManager manager = getSupportFragmentManager();
@@ -51,21 +58,21 @@ public class MainActivity extends AppCompatActivity
     switch (item.getItemId()) {
       case R.id.navigation_home:
         if (!(fragment instanceof CateringsFragment)) {
-          transaction.replace(R.id.content, CateringsFragment.newInstance());
+          transaction.replace(R.id.content, mCateringsFragment);
           transaction.addToBackStack(null);
           transaction.commit();
         }
         return true;
       case R.id.navigation_transaction:
         if (!(fragment instanceof TransactionsFragment)) {
-          transaction.replace(R.id.content, TransactionsFragment.newInstance());
+          transaction.replace(R.id.content, mTransactionsFragment);
           transaction.addToBackStack(null);
           transaction.commit();
         }
         return true;
       case R.id.navigation_profile:
         if (!(fragment instanceof ProfileFragment)) {
-          transaction.replace(R.id.content, ProfileFragment.newInstance());
+          transaction.replace(R.id.content, mProfileFragment);
           transaction.addToBackStack(null);
           transaction.commit();
         }
@@ -79,10 +86,20 @@ public class MainActivity extends AppCompatActivity
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     
-    MasakBanyakApplication.getInstance().getApplicationComponent().inject(this);
+    SessionComponent sessionComponent = DaggerSessionComponent.builder()
+        .sessionModule(new SessionModule())
+        .applicationComponent(Components.getApplicationComponent())
+        .build();
+    Components.setSessionComponent(sessionComponent);
+    Components.getSessionComponent().inject(this);
     
     mToolbar = findViewById(R.id.toolbar);
     mBottomNavigation = findViewById(R.id.navigation);
+    
+    FragmentManager manager = getSupportFragmentManager();
+    FragmentTransaction transaction = manager.beginTransaction();
+    transaction.replace(R.id.content, CateringsFragment.newInstance());
+    transaction.commit();
   }
   
   @Override
@@ -94,11 +111,6 @@ public class MainActivity extends AppCompatActivity
     
     BottomNavigationHelper.removeShiftMode(mBottomNavigation);
     mBottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-    
-    FragmentManager manager = getSupportFragmentManager();
-    FragmentTransaction transaction = manager.beginTransaction();
-    transaction.replace(R.id.content, CateringsFragment.newInstance());
-    transaction.commit();
   }
   
   @Override
@@ -146,20 +158,17 @@ public class MainActivity extends AppCompatActivity
   }
   
   @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    return super.onOptionsItemSelected(item);
-  }
-  
-  @Override
-  public void onHomeFragmentInteraction(Catering catering) {
+  public void onCateringsFragmentInteraction(Catering catering) {
     Intent cateringIntent = new Intent(this, CateringActivity.class);
     cateringIntent.putExtra("catering", catering);
     startActivity(cateringIntent);
   }
   
   @Override
-  public void onTransactionFragmentInteraction() {
-  
+  public void onTransactionsFragmentInteraction(Order order) {
+    Intent transactionIntent = new Intent(this, TransactionActivity.class);
+    transactionIntent.putExtra("order", order);
+    startActivity(transactionIntent);
   }
   
   @Override
@@ -167,4 +176,10 @@ public class MainActivity extends AppCompatActivity
   
   }
   
+  @Override
+  public void onCateringClick(Catering catering) {
+    Intent cateringIntent = new Intent(this, CateringActivity.class);
+    cateringIntent.putExtra("catering", catering);
+    startActivity(cateringIntent);
+  }
 }

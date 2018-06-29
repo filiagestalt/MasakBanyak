@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.baskom.masakbanyak.MasakBanyakApplication;
+import com.baskom.masakbanyak.di.Components;
 import com.baskom.masakbanyak.webservice.MasakBanyakWebService;
 import com.baskom.masakbanyak.R;
 
@@ -39,7 +40,7 @@ public class RegisterActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_register);
     
-    MasakBanyakApplication.getInstance().getApplicationComponent().inject(this);
+    Components.getApplicationComponent().inject(this);
     
     mCoordinatorLayout = findViewById(R.id.coordinatorLayout);
     mName = findViewById(R.id.et_nama_reg);
@@ -81,7 +82,7 @@ public class RegisterActivity extends AppCompatActivity {
     });
   }
   
-  public void showResponse(String error) {
+  private void showResponse(String error) {
     Snackbar.make(mCoordinatorLayout, error, Snackbar.LENGTH_SHORT).show();
   }
 }

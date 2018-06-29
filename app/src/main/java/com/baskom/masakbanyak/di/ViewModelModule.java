@@ -36,7 +36,7 @@ public abstract class ViewModelModule {
   
   //The annotation to define the type of key used in the map.
   @Target(ElementType.METHOD)
-  @Retention(RetentionPolicy.RUNTIME)
+  @Retention(RetentionPolicy.CLASS)
   @MapKey
   @interface ViewModelKey{
     Class<? extends ViewModel> value();

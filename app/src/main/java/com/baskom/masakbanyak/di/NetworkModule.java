@@ -29,10 +29,4 @@ public class NetworkModule {
   public MasakBanyakWebService provideWebService(Retrofit retrofit) {
     return retrofit.create(MasakBanyakWebService.class);
   }
-  
-  @Provides
-  public JWT provideJWT(SharedPreferences preferences) {
-    String access_token = preferences.getString("access_token", "");
-    return new JWT(access_token);
-  }
 }

@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.baskom.masakbanyak.MasakBanyakApplication;
+import com.baskom.masakbanyak.di.Components;
 import com.baskom.masakbanyak.model.Packet;
 import com.baskom.masakbanyak.viewmodel.CateringViewModel;
 import com.baskom.masakbanyak.viewmodel.ViewModelFactory;
@@ -49,8 +50,8 @@ public class CateringActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_catering);
-    
-    MasakBanyakApplication.getInstance().getApplicationComponent().inject(this);
+  
+    Components.getSessionComponent().inject(this);
     
     mCatering = (Catering) getIntent().getSerializableExtra("catering");
     mCateringViewModel = ViewModelProviders.of(this, mViewModelFactory).get(CateringViewModel.class);
@@ -65,7 +66,7 @@ public class CateringActivity extends AppCompatActivity {
     
     mAdapter = new PacketsAdapter();
     
-    mCateringViewModel.getPacketsLiveData(mCatering).observe(this, packets -> {
+    mCateringViewModel.getPacketsLiveDataByCatering(mCatering).observe(this, packets -> {
       mPackets = packets;
       mAdapter.setPackets(mPackets);
       
@@ -79,7 +80,7 @@ public class CateringActivity extends AppCompatActivity {
   protected void onStart() {
     super.onStart();
     
-    mRefreshLayout.setOnRefreshListener(() -> mCateringViewModel.refreshPackets(mCatering));
+    mRefreshLayout.setOnRefreshListener(() -> mCateringViewModel.refreshPacketsByCatering(mCatering));
     
     Picasso.get().load(MASAKBANYAK_URL + mCatering.getAvatar()).fit().centerCrop()
         .into(mImageView);

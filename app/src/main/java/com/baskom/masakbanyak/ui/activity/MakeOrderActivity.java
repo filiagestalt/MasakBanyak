@@ -1,13 +1,16 @@
 package com.baskom.masakbanyak.ui.activity;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.baskom.masakbanyak.MasakBanyakApplication;
 import com.baskom.masakbanyak.R;
+import com.baskom.masakbanyak.di.Components;
 import com.baskom.masakbanyak.model.Customer;
 import com.baskom.masakbanyak.model.Order;
 import com.baskom.masakbanyak.model.Packet;
+import com.baskom.masakbanyak.viewmodel.CustomerViewModel;
+import com.baskom.masakbanyak.viewmodel.ViewModelFactory;
 import com.midtrans.sdk.corekit.core.LocalDataHandler;
 import com.midtrans.sdk.corekit.core.MidtransSDK;
 import com.midtrans.sdk.corekit.core.TransactionRequest;
@@ -22,10 +25,13 @@ import javax.inject.Inject;
 
 import static com.baskom.masakbanyak.Constants.MASAKBANYAK_URL;
 
-public class OrderActivity extends AppCompatActivity {
+public class MakeOrderActivity extends AppCompatActivity {
   @Inject
-  Customer customer;
+  ViewModelFactory mViewModelFactory;
   
+  CustomerViewModel mCustomerViewModel;
+  
+  private Customer mCustomer;
   private Packet mPacket;
   private Order mOrder;
   
@@ -37,12 +43,14 @@ public class OrderActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_order);
     
-    MasakBanyakApplication.getInstance().getApplicationComponent().inject(this);
+    Components.getSessionComponent().inject(this);
+    mCustomerViewModel = ViewModelProviders.of(this, mViewModelFactory).get(CustomerViewModel.class);
     
+    mCustomer = mCustomerViewModel.getCustomerLiveData().getValue();
     mPacket = (Packet) getIntent().getSerializableExtra("packet");
     mOrder = (Order) getIntent().getSerializableExtra("order");
     mOrder.setPacket_id(mPacket.getPacket_id());
-    mOrder.setCustomer_id(customer.getCustomer_id());
+    mOrder.setCustomer_id(mCustomer.getCustomer_id());
     
     mTransactionRequest = new TransactionRequest("order_id", mOrder.getTotal_price());
     
@@ -74,10 +82,10 @@ public class OrderActivity extends AppCompatActivity {
   
   private UserDetail getUserDetail() {
     UserDetail userDetail = new UserDetail();
-    userDetail.setUserId(customer.getCustomer_id());
-    userDetail.setUserFullName(customer.getName());
-    userDetail.setEmail(customer.getEmail());
-    userDetail.setPhoneNumber(customer.getPhone());
+    userDetail.setUserId(mCustomer.getCustomer_id());
+    userDetail.setUserFullName(mCustomer.getName());
+    userDetail.setEmail(mCustomer.getEmail());
+    userDetail.setPhoneNumber(mCustomer.getPhone());
     
     return userDetail;
   }

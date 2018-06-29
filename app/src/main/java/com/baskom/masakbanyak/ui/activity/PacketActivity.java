@@ -10,7 +10,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.baskom.masakbanyak.model.Order;
 import com.baskom.masakbanyak.model.Packet;
@@ -20,7 +19,6 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,11 +42,11 @@ public class PacketActivity extends AppCompatActivity implements
   private TextView mTextViewPacketPrice;
   private StepperTouch mNumberStepper;
   private FloatingActionButton mButtonOrderDate;
-  private FloatingActionButton mButtonOrderLocation;
-  private Button mButtonOrder;
-  
   private DatePickerDialog mDatePickerDialog;
   private TimePickerDialog mTimePickerDialog;
+  private FloatingActionButton mButtonOrderLocation;
+  private AlertDialog mLocationDialog;
+  private Button mButtonOrder;
   
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -101,10 +99,10 @@ public class PacketActivity extends AppCompatActivity implements
     });
     
     mButtonOrderDate.setOnClickListener(v -> mDatePickerDialog.show(getFragmentManager(), "date_picker"));
-    mButtonOrderLocation.setOnClickListener(v -> showAddressDialog());
+    mButtonOrderLocation.setOnClickListener(v -> showLocationDialog());
   
     mButtonOrder.setOnClickListener(v -> {
-      Intent orderIntent = new Intent(PacketActivity.this, OrderActivity.class);
+      Intent orderIntent = new Intent(PacketActivity.this, MakeOrderActivity.class);
       
       orderIntent.putExtra("packet", mPacket);
       orderIntent.putExtra("order", mOrder);
@@ -130,9 +128,9 @@ public class PacketActivity extends AppCompatActivity implements
     mOrder.setEvent_time(ISODate.format(datetime));
   }
   
-  private void showAddressDialog() {
+  private void showLocationDialog() {
     EditText editText = new EditText(this);
-    AlertDialog dialog = new AlertDialog.Builder(this)
+    mLocationDialog = new AlertDialog.Builder(this)
         .setTitle("Alamat")
         .setMessage("Masukkan alamat acara.")
         .setView(editText)
@@ -143,6 +141,6 @@ public class PacketActivity extends AppCompatActivity implements
         .setNegativeButton("Cancel", null)
         .create();
     
-    dialog.show();
+    mLocationDialog.show();
   }
 }

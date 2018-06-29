@@ -19,8 +19,11 @@ import android.view.ViewGroup;
 
 import com.baskom.masakbanyak.MasakBanyakApplication;
 import com.baskom.masakbanyak.R;
+import com.baskom.masakbanyak.di.Components;
 import com.baskom.masakbanyak.model.Order;
+import com.baskom.masakbanyak.model.Packet;
 import com.baskom.masakbanyak.ui.adapter.OrdersAdapter;
+import com.baskom.masakbanyak.viewmodel.CateringViewModel;
 import com.baskom.masakbanyak.viewmodel.OrderViewModel;
 import com.baskom.masakbanyak.viewmodel.ViewModelFactory;
 
@@ -34,9 +37,9 @@ public class TransactionsFragment extends Fragment {
   ViewModelFactory mViewModelFactory;
   
   OrderViewModel mOrderViewModel;
-  
+
   private ArrayList<Order> mOrders = new ArrayList<>();
-  
+
   private AppBarLayout mAppBarLayout;
   private BottomNavigationView mBottomNavigation;
   private ColorStateList mBottomNavigationIcon;
@@ -57,8 +60,8 @@ public class TransactionsFragment extends Fragment {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    
-    MasakBanyakApplication.getInstance().getApplicationComponent().inject(this);
+  
+    Components.getSessionComponent().inject(this);
     
     mOrderViewModel = ViewModelProviders.of(this, mViewModelFactory).get(OrderViewModel.class);
   }
@@ -140,6 +143,6 @@ public class TransactionsFragment extends Fragment {
   }
   
   public interface TransactionFragmentInteractionListener {
-    void onTransactionFragmentInteraction();
+    void onTransactionsFragmentInteraction(Order order);
   }
 }

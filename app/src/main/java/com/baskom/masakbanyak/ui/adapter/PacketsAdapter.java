@@ -64,7 +64,7 @@ public class PacketsAdapter extends RecyclerView.Adapter<PacketsAdapter.ViewHold
     return R.layout.itemview_packet;
   }
   
-  public static class ViewHolder extends RecyclerView.ViewHolder {
+  public class ViewHolder extends RecyclerView.ViewHolder {
     private CardView mLayout;
     private ImageView mImageView;
     private TextView mTextView;

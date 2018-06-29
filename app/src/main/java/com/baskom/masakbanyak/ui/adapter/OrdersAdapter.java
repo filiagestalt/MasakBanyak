@@ -1,6 +1,7 @@
 package com.baskom.masakbanyak.ui.adapter;
 
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +16,11 @@ import java.util.ArrayList;
 
 public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.ViewHolder> {
   private ArrayList<Order> orders = new ArrayList<>();
-  private TransactionsFragment.TransactionFragmentInteractionListener mListener;
   
-  public OrdersAdapter(TransactionsFragment.TransactionFragmentInteractionListener mListener) {
-    this.mListener = mListener;
+  private TransactionsFragment.TransactionFragmentInteractionListener listener;
+  
+  public OrdersAdapter(TransactionsFragment.TransactionFragmentInteractionListener listener) {
+    this.listener = listener;
   }
   
   public void setOrders(ArrayList<Order> orders) {
@@ -36,7 +38,9 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.ViewHolder
   
   @Override
   public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-    holder.orderTimeTextView.setText(orders.get(position).getOrderDateDDMMYYYY());
+    holder.cardView.setOnClickListener(v -> listener.onTransactionsFragmentInteraction(orders.get(position)));
+    
+    holder.orderTimeTextView.setText(orders.get(position).getOrder_time());
     holder.statusTextView.setText("Status: "+orders.get(position).getStatus().toUpperCase());
   }
   
@@ -51,12 +55,14 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.ViewHolder
   }
   
   public class ViewHolder extends RecyclerView.ViewHolder {
+    private CardView cardView;
     private TextView orderTimeTextView;
     private TextView statusTextView;
     
     public ViewHolder(View itemView) {
       super(itemView);
       
+      cardView = itemView.findViewById(R.id.cardView);
       orderTimeTextView = itemView.findViewById(R.id.orderTimeTextView);
       statusTextView = itemView.findViewById(R.id.statusTextView);
     }

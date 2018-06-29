@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.auth0.android.jwt.JWT;
+import com.baskom.masakbanyak.di.SessionScope;
 import com.baskom.masakbanyak.model.Order;
 import com.baskom.masakbanyak.util.Util;
 import com.baskom.masakbanyak.webservice.MasakBanyakWebService;
@@ -19,7 +20,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-@Singleton
+@SessionScope
 public class OrderRepository {
   private MutableLiveData<ArrayList<Order>> ordersLiveData = new MutableLiveData<>();
   
@@ -45,7 +46,7 @@ public class OrderRepository {
       String authorization = "Bearer "+access_token;
       String customer_id = jwt.getClaim("customer_id").asString();
   
-      Call<ArrayList<Order>> call = webservice.getOrders(authorization, customer_id);
+      Call<ArrayList<Order>> call = webservice.getOrdersByCustomer(authorization, customer_id);
       
       call.enqueue(new Callback<ArrayList<Order>>() {
         @Override

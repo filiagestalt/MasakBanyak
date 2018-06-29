@@ -7,6 +7,7 @@ import com.baskom.masakbanyak.model.Packet;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import okhttp3.MultipartBody;
 import okhttp3.ResponseBody;
@@ -22,10 +23,11 @@ import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 
 public interface MasakBanyakWebService {
   @FormUrlEncoded
-  @POST("/auth/customers/register")
+  @POST("/auth/customer/register")
   Call<ResponseBody> register(
       @Field("name") String name,
       @Field("phone") String phone,
@@ -34,21 +36,21 @@ public interface MasakBanyakWebService {
   );
   
   @FormUrlEncoded
-  @POST("/auth/customers/login")
+  @POST("/auth/customer/login")
   Call<JsonObject> login(
       @Field("email") String email,
       @Field("password") String password
   );
   
   @FormUrlEncoded
-  @POST("/auth/customers/refresh")
+  @POST("/auth/customer/refresh")
   Call<JsonObject> refresh(
       @Field("refresh_token") String refreshToken,
       @Field("customer_id") String customerId
   );
   
   @FormUrlEncoded
-  @POST("/auth/customers/logout")
+  @POST("/auth/customer/logout")
   Call<ResponseBody> logout(
       @Field("refresh_token") String refreshToken,
       @Field("customer_id") String customer_id
@@ -78,12 +80,15 @@ public interface MasakBanyakWebService {
       @Part() MultipartBody.Part image
   );
   
+  @GET("/customers/{id}/orders")
+  Call<ArrayList<Order>> getOrdersByCustomer(@Header("Authorization") String authorization, @Path("id") String customer_id);
+  
   @GET("/caterings")
   Call<ArrayList<Catering>> getCaterings(@Header("Authorization") String authorization);
   
   @GET("/caterings/{id}/packets")
-  Call<ArrayList<Packet>> getPackets(@Header("Authorization") String authorization, @Path("id") String catering_id);
+  Call<ArrayList<Packet>> getPacketsByCatering(@Header("Authorization") String authorization, @Path("id") String catering_id);
   
-  @GET("/orders")
-  Call<ArrayList<Order>> getOrders(@Header("Authorization") String authorization, @Query("customer_id") String customer_id);
+  @GET("/packets/{id}")
+  Call<Packet> getPacketById(@Header("Authorization") String authorization, @Path("id") String packet_id);
 }
