@@ -1,7 +1,9 @@
 package com.baskom.masakbanyak.ui.activity;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -37,6 +39,7 @@ public class CateringActivity extends AppCompatActivity {
   private ArrayList<Packet> mPackets = new ArrayList<>();
   
   private ImageView mImageView;
+  private FloatingActionButton mButtonRating;
   private TextView mTextViewCateringName;
   private TextView mTextViewCateringEmail;
   private TextView mTextViewCateringAddress;
@@ -58,6 +61,7 @@ public class CateringActivity extends AppCompatActivity {
     
     mImageView = findViewById(R.id.catering_image);
     mTextViewCateringName = findViewById(R.id.catering_name);
+    mButtonRating = findViewById(R.id.button_rating);
     mTextViewCateringEmail = findViewById(R.id.catering_email);
     mTextViewCateringAddress = findViewById(R.id.catering_address);
     mTextViewCateringPhone = findViewById(R.id.catering_phone);
@@ -65,32 +69,34 @@ public class CateringActivity extends AppCompatActivity {
     mRecyclerView = findViewById(R.id.packets);
     
     mAdapter = new PacketsAdapter();
-    
-    mCateringViewModel.getPacketsLiveDataByCatering(mCatering).observe(this, packets -> {
-      mPackets = packets;
-      mAdapter.setPackets(mPackets);
-      
-      mRefreshLayout.setRefreshing(false);
-    });
   
     mRefreshLayout.setRefreshing(true);
-  }
   
-  @Override
-  protected void onStart() {
-    super.onStart();
-    
     mRefreshLayout.setOnRefreshListener(() -> mCateringViewModel.refreshPacketsByCatering(mCatering));
-    
+  
     Picasso.get().load(MASAKBANYAK_URL + mCatering.getAvatar()).fit().centerCrop()
         .into(mImageView);
+  
+    mButtonRating.setOnClickListener(v -> {
+      Intent rateIntent = new Intent(this, RatingActivity.class);
+      rateIntent.putExtra("catering", mCatering);
+      startActivity(rateIntent);
+    });
     
     mTextViewCateringName.setText(mCatering.getName());
     mTextViewCateringEmail.setText(mCatering.getEmail());
     mTextViewCateringAddress.setText(mCatering.getAddress());
     mTextViewCateringPhone.setText(mCatering.getPhone());
-    
+  
     mRecyclerView.setAdapter(mAdapter);
     mRecyclerView.setLayoutManager(new LinearLayoutManager(this, Configuration.ORIENTATION_PORTRAIT, false));
+  
+    mCateringViewModel.getPacketsLiveDataByCatering(mCatering).observe(this, packets -> {
+      mPackets = packets;
+      mAdapter.setPackets(mPackets);
+    
+      mRefreshLayout.setRefreshing(false);
+    });
   }
+  
 }

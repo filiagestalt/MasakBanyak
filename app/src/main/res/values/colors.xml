@@ -15,4 +15,5 @@
     <color name="hoverGrey">#DDDDDD</color>
     <color name="ghostHover">#666666</color>
     <color name="divider">#1FFFFFFF</color>
+    <color name="colorTranslucentBlack">#ffffff</color>
 </resources>

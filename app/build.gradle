@@ -66,5 +66,7 @@ dependencies {
     implementation 'com.github.florent37:shapeofview:1.1.2'
     //datetimepicker
     implementation 'com.wdullaer:materialdatetimepicker:3.6.0'
+    //emotion rating view
+    implementation 'com.github.rubygarage:emotion-rating-view:v1.0.0'
 
 }

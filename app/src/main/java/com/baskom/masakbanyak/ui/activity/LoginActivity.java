@@ -35,7 +35,7 @@ public class LoginActivity extends AppCompatActivity {
   private AutoCompleteTextView mEmail;
   private AutoCompleteTextView mPassword;
   private Button mButtonLogin;
-  private FloatingActionButton mButtonRegister;
+  private Button mButtonRegister;
   
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
     mEmail = findViewById(R.id.et_email);
     mPassword = findViewById(R.id.et_password);
     mButtonLogin = findViewById(R.id.button_login);
-    mButtonRegister = findViewById(R.id.fab);
+    mButtonRegister = findViewById(R.id.button_register);
   }
   
   @Override
