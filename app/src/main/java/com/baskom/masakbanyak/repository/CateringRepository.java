@@ -23,6 +23,7 @@ import retrofit2.Response;
 
 public class CateringRepository {
   private MutableLiveData<ArrayList<Catering>> cateringsLiveData = new MutableLiveData<>();
+  private MutableLiveData<ArrayList<Catering>> searchedCateringsLiveData = new MutableLiveData<>();
   private MutableLiveData<ArrayList<Packet>> packetsLiveDataByCatering = new MutableLiveData<>();
   private MutableLiveData<Packet> packetLiveDataById = new MutableLiveData<>();
   
@@ -41,6 +42,11 @@ public class CateringRepository {
   
   public LiveData<ArrayList<Catering>> getCateringsLiveData() {
     return cateringsLiveData;
+  }
+  
+  public LiveData<ArrayList<Catering>> getSearchedCateringsLiveData(String keyword) {
+    refreshSearchedCaterings(keyword);
+    return searchedCateringsLiveData;
   }
   
   public LiveData<ArrayList<Packet>> getPacketsLiveDataByCatering(Catering catering) {
@@ -64,6 +70,28 @@ public class CateringRepository {
         public void onResponse(Call<ArrayList<Catering>> call, Response<ArrayList<Catering>> response) {
           if (response.isSuccessful()) {
             cateringsLiveData.postValue(response.body());
+          }
+        }
+        
+        @Override
+        public void onFailure(Call<ArrayList<Catering>> call, Throwable t) {
+          Log.d("Network Call Failure", t.toString());
+        }
+      });
+    });
+  }
+  
+  public void refreshSearchedCaterings(String keyword) {
+    Util.authorizeAndExecuteCall(preferences, jwt, webService, (access_token, webservice) -> {
+      String authorization = "Bearer " + access_token;
+      
+      Call<ArrayList<Catering>> call = webservice.searchCaterings(authorization, keyword);
+      
+      call.enqueue(new Callback<ArrayList<Catering>>() {
+        @Override
+        public void onResponse(Call<ArrayList<Catering>> call, Response<ArrayList<Catering>> response) {
+          if (response.isSuccessful()) {
+            searchedCateringsLiveData.postValue(response.body());
           }
         }
         

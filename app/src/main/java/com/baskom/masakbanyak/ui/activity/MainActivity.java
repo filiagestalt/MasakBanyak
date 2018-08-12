@@ -33,7 +33,6 @@ import javax.inject.Inject;
 
 public class MainActivity extends AppCompatActivity
     implements CateringsFragment.CateringsFragmentInteractionListener,
-    SearchFragment.OnSearchFragmentInteractionListener,
     TransactionsFragment.TransactionFragmentInteractionListener,
     ProfileFragment.ProfileFragmentInteractionListener {
   
@@ -144,8 +143,13 @@ public class MainActivity extends AppCompatActivity
     mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
       @Override
       public boolean onQueryTextSubmit(String query) {
-        // TODO: Make SearchFragment and call it from here
-        return false;
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.content, SearchFragment.newInstance(query));
+        transaction.addToBackStack(null);
+        transaction.commit();
+        
+        return true;
       }
       
       @Override
@@ -174,12 +178,5 @@ public class MainActivity extends AppCompatActivity
   @Override
   public void onProfileFragmentInteraction() {
   
-  }
-  
-  @Override
-  public void onCateringClick(Catering catering) {
-    Intent cateringIntent = new Intent(this, CateringActivity.class);
-    cateringIntent.putExtra("catering", catering);
-    startActivity(cateringIntent);
   }
 }

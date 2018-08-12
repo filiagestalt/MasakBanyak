@@ -16,6 +16,7 @@ import javax.inject.Inject;
 
 public class CateringViewModel extends ViewModel {
   private LiveData<ArrayList<Catering>> cateringsLiveData;
+  private LiveData<ArrayList<Catering>> searchedCateringsLiveData;
   private LiveData<ArrayList<Packet>> packetsLiveDataByCatering;
   private LiveData<Packet> packetLiveDataByOrder;
   
@@ -29,6 +30,11 @@ public class CateringViewModel extends ViewModel {
   
   public LiveData<ArrayList<Catering>> getCateringsLiveData() {
     return cateringsLiveData;
+  }
+  
+  public LiveData<ArrayList<Catering>> getSearchedCateringsLiveData(String keyword) {
+    this.searchedCateringsLiveData = repository.getSearchedCateringsLiveData(keyword);
+    return searchedCateringsLiveData;
   }
   
   public LiveData<ArrayList<Packet>> getPacketsLiveDataByCatering(Catering catering) {

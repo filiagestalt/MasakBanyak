@@ -2,8 +2,12 @@ package com.baskom.masakbanyak.ui.activity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -12,6 +16,7 @@ import com.baskom.masakbanyak.di.Components;
 import com.baskom.masakbanyak.model.Order;
 import com.baskom.masakbanyak.model.Packet;
 import com.baskom.masakbanyak.viewmodel.CateringViewModel;
+import com.baskom.masakbanyak.viewmodel.OrderViewModel;
 import com.baskom.masakbanyak.viewmodel.ViewModelFactory;
 
 import java.text.NumberFormat;
@@ -24,11 +29,13 @@ public class TransactionActivity extends AppCompatActivity {
   @Inject
   ViewModelFactory mViewModelFactory;
   
+  private OrderViewModel mOrderViewModel;
   private CateringViewModel mCateringViewModel;
   
   private Order mOrder;
   private Packet mPacket;
   
+  private CoordinatorLayout mCoordinatorLayout;
   private SwipeRefreshLayout mRefreshLayout;
   private TextView mStatus;
   private TextView mBank;
@@ -39,6 +46,7 @@ public class TransactionActivity extends AppCompatActivity {
   private TextView mTime;
   private TextView mAddress;
   private LinearLayout mContents;
+  private Button mRefundButton;
   
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +56,11 @@ public class TransactionActivity extends AppCompatActivity {
     Components.getSessionComponent().inject(this);
     
     mOrder = (Order) getIntent().getSerializableExtra("order");
+  
+    mOrderViewModel = ViewModelProviders.of(this, mViewModelFactory).get(OrderViewModel.class);
     mCateringViewModel = ViewModelProviders.of(this, mViewModelFactory).get(CateringViewModel.class);
     
+    mCoordinatorLayout = findViewById(R.id.coordinatorLayout);
     mRefreshLayout = findViewById(R.id.refreshLayout);
     mStatus = findViewById(R.id.transactionStatusTextView);
     mBank = findViewById(R.id.bankTextView);
@@ -60,6 +71,9 @@ public class TransactionActivity extends AppCompatActivity {
     mTime = findViewById(R.id.timeTextView);
     mAddress = findViewById(R.id.addressTextView);
     mContents = findViewById(R.id.packetContentsLayout);
+    mRefundButton = findViewById(R.id.refundButton);
+  
+    mRefundButton.setVisibility(View.INVISIBLE);
     
     mRefreshLayout.setRefreshing(true);
     mRefreshLayout.setOnRefreshListener(() -> mCateringViewModel.refreshPacketByOrder(mOrder));
@@ -82,9 +96,26 @@ public class TransactionActivity extends AppCompatActivity {
         content.setText(mPacket.getContents().get(i));
         mContents.addView(content);
       }
+  
+      if(mOrder.getStatus().toLowerCase().equals("settlement")){
+        mRefundButton.setOnClickListener(view -> mOrderViewModel.refundOrder(mOrder));
+        mRefundButton.setVisibility(View.VISIBLE);
+      }
       
       mRefreshLayout.setRefreshing(false);
     });
+  
+    mOrderViewModel.getNotificationEventLiveData().observe(this, notificationEvent -> {
+      String notification = notificationEvent.getContentIfNotHandled();
+    
+      if(notification != null){
+        showResponse(notification);
+      }
+    });
+  }
+  
+  public void showResponse(String response) {
+    Snackbar.make(mCoordinatorLayout, response, Snackbar.LENGTH_SHORT).show();
   }
   
 }

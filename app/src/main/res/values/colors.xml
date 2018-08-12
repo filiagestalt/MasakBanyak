@@ -9,4 +9,10 @@
     <color name="custom01">#a0edc1</color>
     <color name="custom02">#F6F0E4</color>
     <color name="black">#000000</color>
+    <color name="disableGrey">#EEEEEE</color>
+    <color name="disableGreyText">#BBBBBB</color>
+    <color name="redActive">#E2231A</color>
+    <color name="hoverGrey">#DDDDDD</color>
+    <color name="ghostHover">#666666</color>
+    <color name="divider">#1FFFFFFF</color>
 </resources>

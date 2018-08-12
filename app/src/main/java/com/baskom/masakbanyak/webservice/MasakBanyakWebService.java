@@ -86,9 +86,15 @@ public interface MasakBanyakWebService {
   @GET("/caterings")
   Call<ArrayList<Catering>> getCaterings(@Header("Authorization") String authorization);
   
+  @GET("/caterings/search/{keyword}")
+  Call<ArrayList<Catering>> searchCaterings(@Header("Authorization") String authorization, @Path("keyword") String keyword);
+  
   @GET("/caterings/{id}/packets")
   Call<ArrayList<Packet>> getPacketsByCatering(@Header("Authorization") String authorization, @Path("id") String catering_id);
   
   @GET("/packets/{id}")
   Call<Packet> getPacketById(@Header("Authorization") String authorization, @Path("id") String packet_id);
+  
+  @POST("/orders/{id}/refund")
+  Call<ResponseBody> refundOrder(@Header("Authorization") String authorization, @Path("id") String order_id);
 }
